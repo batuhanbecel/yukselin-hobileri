@@ -3,12 +3,32 @@ import { Heart } from "lucide-react";
 import { InstagramIcon } from "@/components/icons/instagram-icon";
 import { NAV_LINKS, SITE_NAME, INSTAGRAM_URL } from "@/lib/constants";
 
-export function Footer() {
+type FooterProps = {
+  siteTitle?: string;
+  tagline?: string;
+  description?: string;
+  signature?: string;
+  navTitle?: string;
+  instagramUrl?: string;
+  instagramHandle?: string;
+};
+
+export function Footer({
+  siteTitle,
+  tagline,
+  description,
+  signature,
+  navTitle,
+  instagramUrl,
+  instagramHandle,
+}: FooterProps) {
   const year = new Date().getFullYear();
+  const title = siteTitle || SITE_NAME;
+  const igUrl = instagramUrl || INSTAGRAM_URL;
+  const igHandle = instagramHandle || "@ykslbcl";
 
   return (
     <footer className="relative mt-auto border-t border-terracotta-soft/30 bg-cream-deep/40">
-      {/* Stitch line at top */}
       <div
         className="absolute left-8 right-8 top-3 h-px text-terracotta/30 stitch-border"
         aria-hidden
@@ -17,27 +37,30 @@ export function Footer() {
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
         <div className="flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
           <div className="max-w-sm">
-            <p className="font-heading text-2xl text-cocoa">{SITE_NAME}</p>
-            <p className="font-hand mt-1 text-xl text-terracotta">
-              her ilmek bir hikaye
-            </p>
-            <p className="mt-4 text-sm leading-relaxed text-cocoa-soft">
-              Bu sitedeki ürünler sadece paylaşım içindir. Beğendiğiniz bir
-              çanta varsa Instagram&apos;dan bana yazabilirsiniz.
-            </p>
+            <p className="font-heading text-2xl text-cocoa">{title}</p>
+            {tagline && (
+              <p className="font-hand mt-1 text-xl text-terracotta">{tagline}</p>
+            )}
+            {description && (
+              <p className="mt-4 text-sm leading-relaxed text-cocoa-soft">
+                {description}
+              </p>
+            )}
             <Link
-              href={INSTAGRAM_URL}
+              href={igUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-5 inline-flex items-center gap-2 rounded-full border border-terracotta/30 bg-white/60 px-4 py-2 text-sm font-medium text-terracotta transition-colors hover:bg-terracotta hover:text-white"
             >
               <InstagramIcon />
-              @ykslbcl
+              {igHandle}
             </Link>
           </div>
 
           <nav className="flex flex-col gap-3">
-            <p className="font-hand text-lg text-terracotta">sayfalar</p>
+            {navTitle && (
+              <p className="font-hand text-lg text-terracotta">{navTitle}</p>
+            )}
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
@@ -51,11 +74,13 @@ export function Footer() {
         </div>
 
         <div className="mt-12 flex flex-col items-center justify-between gap-2 border-t border-dashed border-terracotta/20 pt-6 text-center text-sm text-cocoa-soft sm:flex-row sm:text-left">
-          <p>© {year} {SITE_NAME}</p>
-          <p className="font-hand inline-flex items-center gap-2 text-base">
-            sevgiyle örüldü
-            <Heart className="size-4 fill-terracotta text-terracotta" />
-          </p>
+          <p>© {year} {title}</p>
+          {signature && (
+            <p className="font-hand inline-flex items-center gap-2 text-base">
+              {signature}
+              <Heart className="size-4 fill-terracotta text-terracotta" />
+            </p>
+          )}
         </div>
       </div>
     </footer>

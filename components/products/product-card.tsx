@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { InstagramButton } from "@/components/instagram-button";
-import { formatPrice } from "@/lib/format";
+import { computeSale, formatPrice } from "@/lib/format";
 import type { Product } from "@/lib/sanity/types";
 import { cn } from "@/lib/utils";
 import { ProductImage } from "./product-image";
@@ -16,10 +16,13 @@ const WOBBLES = ["wobble-1", "wobble-2", "wobble-3", "wobble-4"];
 export function ProductCard({ product, priority, index = 0 }: ProductCardProps) {
   const slug = product.slug.current;
   const wobble = WOBBLES[index % WOBBLES.length];
+  const sale = computeSale(product.price, product.salePrice);
+  const badgeText =
+    product.saleBadge?.trim() ||
+    (sale.onSale && sale.percentOff ? `%${sale.percentOff} indirim` : null);
 
   return (
     <div className="group relative pt-3">
-      {/* washi tape decoration */}
       <span
         className="tape left-1/2 top-0 h-5 w-16 -translate-x-1/2 -rotate-3 rounded-sm opacity-80 transition-transform group-hover:-rotate-6"
         aria-hidden
@@ -31,6 +34,12 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
           wobble
         )}
       >
+        {sale.onSale && badgeText && (
+          <span className="absolute -top-2 -right-2 z-10 rotate-6 rounded-full border-2 border-white bg-terracotta px-3 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-md">
+            {badgeText}
+          </span>
+        )}
+
         <Link href={`/urunler/${slug}`} className="block">
           <div className="overflow-hidden rounded-sm">
             <ProductImage
@@ -42,7 +51,7 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
           </div>
 
           <div className="space-y-1 px-1 pt-4 pb-1 text-center">
-            {product.featured && (
+            {product.featured && !sale.onSale && (
               <p className="font-hand text-base text-terracotta">
                 özel parça
               </p>
@@ -50,9 +59,21 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
             <h3 className="font-heading text-xl leading-snug text-cocoa">
               {product.title}
             </h3>
-            <p className="font-hand text-2xl text-terracotta">
-              {formatPrice(product.price)}
-            </p>
+
+            {sale.onSale ? (
+              <div className="flex items-center justify-center gap-2">
+                <span className="text-base text-cocoa-soft line-through">
+                  {formatPrice(sale.originalPrice!)}
+                </span>
+                <span className="font-hand text-2xl text-terracotta">
+                  {formatPrice(sale.effectivePrice)}
+                </span>
+              </div>
+            ) : (
+              <p className="font-hand text-2xl text-terracotta">
+                {formatPrice(sale.effectivePrice)}
+              </p>
+            )}
           </div>
         </Link>
 

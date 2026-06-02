@@ -5,7 +5,7 @@ import { InstagramButton } from "@/components/instagram-button";
 import { ProductGallery } from "@/components/products/product-gallery";
 import { ShopierButton } from "@/components/shopier-button";
 import { Button } from "@/components/ui/button";
-import { formatPrice } from "@/lib/format";
+import { computeSale, formatPrice } from "@/lib/format";
 import {
   getProductBySlug,
   getProductSlugs,
@@ -27,11 +27,12 @@ export async function generateMetadata({
   const { slug } = await params;
   const product = await getProductBySlug(slug);
   if (!product) return { title: "Çanta bulunamadı" };
+  const sale = computeSale(product.price, product.salePrice);
   return {
     title: product.title,
     description:
       product.description ||
-      `${product.title} — ${formatPrice(product.price)}. Instagram'dan sipariş verin.`,
+      `${product.title} — ${formatPrice(sale.effectivePrice)}. Instagram'dan sipariş verin.`,
   };
 }
 
@@ -45,6 +46,10 @@ export default async function ProductDetailPage({ params }: PageProps) {
   if (!product) notFound();
 
   const shopierUrl = product.shopierUrl || settings.shopierStoreUrl;
+  const sale = computeSale(product.price, product.salePrice);
+  const saleBadge =
+    product.saleBadge?.trim() ||
+    (sale.onSale && sale.percentOff ? `%${sale.percentOff} indirim` : null);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
@@ -62,7 +67,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
         </div>
 
         <div className="flex flex-col justify-center space-y-6">
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             {product.category?.title && (
               <Link
                 href={`/urunler?kategori=${product.category.slug.current}`}
@@ -71,7 +76,12 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 {product.category.title}
               </Link>
             )}
-            {product.featured && (
+            {sale.onSale && saleBadge && (
+              <span className="rounded-full bg-terracotta px-3 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-sm">
+                {saleBadge}
+              </span>
+            )}
+            {product.featured && !sale.onSale && (
               <p className="font-hand text-2xl text-terracotta">özel parça</p>
             )}
           </div>
@@ -80,11 +90,22 @@ export default async function ProductDetailPage({ params }: PageProps) {
             <h1 className="font-heading text-4xl leading-tight text-cocoa sm:text-5xl">
               {product.title}
             </h1>
-            <div className="mt-4 inline-flex items-baseline gap-2">
-              <span className="font-hand text-4xl text-terracotta">
-                {formatPrice(product.price)}
-              </span>
-            </div>
+            {sale.onSale ? (
+              <div className="mt-4 flex flex-wrap items-baseline gap-3">
+                <span className="text-2xl text-cocoa-soft line-through">
+                  {formatPrice(sale.originalPrice!)}
+                </span>
+                <span className="font-hand text-5xl text-terracotta">
+                  {formatPrice(sale.effectivePrice)}
+                </span>
+              </div>
+            ) : (
+              <div className="mt-4 inline-flex items-baseline gap-2">
+                <span className="font-hand text-4xl text-terracotta">
+                  {formatPrice(sale.effectivePrice)}
+                </span>
+              </div>
+            )}
           </div>
 
           {product.description && (
@@ -93,14 +114,20 @@ export default async function ProductDetailPage({ params }: PageProps) {
             </p>
           )}
 
-          <div className="rounded-3xl border border-dashed border-terracotta/40 bg-white/60 p-6">
-            <p className="font-hand text-xl text-terracotta">küçük bir not</p>
-            <p className="mt-1 text-sm leading-relaxed text-cocoa-soft">
-              Bu siteden doğrudan satış yapılmamaktadır. Çanta hoşunuza
-              gittiyse Instagram&apos;dan bana yazabilirsiniz; renk, model ve
-              detaylarını birlikte konuşalım.
-            </p>
-          </div>
+          {(settings.detailNoteHandwritten || settings.detailNoteText) && (
+            <div className="rounded-3xl border border-dashed border-terracotta/40 bg-white/60 p-6">
+              {settings.detailNoteHandwritten && (
+                <p className="font-hand text-xl text-terracotta">
+                  {settings.detailNoteHandwritten}
+                </p>
+              )}
+              {settings.detailNoteText && (
+                <p className="mt-1 text-sm leading-relaxed text-cocoa-soft">
+                  {settings.detailNoteText}
+                </p>
+              )}
+            </div>
+          )}
 
           <div className="flex flex-col gap-3 sm:flex-row">
             <InstagramButton

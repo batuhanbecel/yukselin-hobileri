@@ -1,22 +1,55 @@
 import { getSanityClient } from "./client";
 import { isSanityConfigured } from "./config";
 import {
+  aboutPageQuery,
   categoriesQuery,
   featuredProductsQuery,
+  homePageQuery,
   productBySlugQuery,
   productSlugsQuery,
   productsByCategoryQuery,
+  productsPageQuery,
   productsQuery,
   siteSettingsQuery,
 } from "./queries";
-import type { Category, Product, SiteSettings } from "./types";
-import { mockCategories, mockProducts, mockSiteSettings } from "./mock-data";
+import type {
+  AboutPage,
+  Category,
+  HomePage,
+  Product,
+  ProductsPage,
+  SiteSettings,
+} from "./types";
+import {
+  mockAboutPage,
+  mockCategories,
+  mockHomePage,
+  mockProducts,
+  mockProductsPage,
+  mockSiteSettings,
+} from "./mock-data";
 
 const revalidate = 60;
 
 function filterMockByCategory(slug?: string): Product[] {
   if (!slug) return mockProducts;
   return mockProducts.filter((p) => p.category?.slug.current === slug);
+}
+
+/**
+ * Sanity'den gelen verideki undefined alanları mock değerlerle doldur.
+ * (Kullanıcı bir alanı boş bıraktıysa default metin görünsün.)
+ */
+function withDefaults<T extends object>(base: T, fromSanity?: T | null): T {
+  if (!fromSanity) return base;
+  const result = { ...base } as Record<string, unknown>;
+  for (const [key, value] of Object.entries(fromSanity as Record<string, unknown>)) {
+    if (value !== undefined && value !== null) {
+      // boş array yine de override eder — kullanıcı bilerek temizlemiş demektir
+      result[key] = value;
+    }
+  }
+  return result as T;
 }
 
 export async function getProducts(categorySlug?: string): Promise<Product[]> {
@@ -51,7 +84,9 @@ export async function getFeaturedProducts(): Promise<Product[]> {
       {},
       { next: { revalidate } }
     );
-    return featured.length > 0 ? featured : mockProducts.filter((p) => p.featured).slice(0, 6);
+    return featured.length > 0
+      ? featured
+      : mockProducts.filter((p) => p.featured).slice(0, 6);
   } catch {
     return mockProducts.filter((p) => p.featured).slice(0, 6);
   }
@@ -122,8 +157,56 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       {},
       { next: { revalidate } }
     );
-    return settings ?? mockSiteSettings;
+    return withDefaults(mockSiteSettings, settings);
   } catch {
     return mockSiteSettings;
+  }
+}
+
+export async function getHomePage(): Promise<HomePage> {
+  if (!isSanityConfigured) return mockHomePage;
+  const client = getSanityClient();
+  if (!client) return mockHomePage;
+  try {
+    const data = await client.fetch<HomePage | null>(
+      homePageQuery,
+      {},
+      { next: { revalidate } }
+    );
+    return withDefaults(mockHomePage, data);
+  } catch {
+    return mockHomePage;
+  }
+}
+
+export async function getAboutPage(): Promise<AboutPage> {
+  if (!isSanityConfigured) return mockAboutPage;
+  const client = getSanityClient();
+  if (!client) return mockAboutPage;
+  try {
+    const data = await client.fetch<AboutPage | null>(
+      aboutPageQuery,
+      {},
+      { next: { revalidate } }
+    );
+    return withDefaults(mockAboutPage, data);
+  } catch {
+    return mockAboutPage;
+  }
+}
+
+export async function getProductsPage(): Promise<ProductsPage> {
+  if (!isSanityConfigured) return mockProductsPage;
+  const client = getSanityClient();
+  if (!client) return mockProductsPage;
+  try {
+    const data = await client.fetch<ProductsPage | null>(
+      productsPageQuery,
+      {},
+      { next: { revalidate } }
+    );
+    return withDefaults(mockProductsPage, data);
+  } catch {
+    return mockProductsPage;
   }
 }

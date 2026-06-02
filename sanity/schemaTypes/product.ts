@@ -25,6 +25,29 @@ export const product = defineType({
       validation: (Rule) => Rule.required().min(0),
     }),
     defineField({
+      name: "salePrice",
+      title: "İndirimli Fiyat (TL)",
+      type: "number",
+      description:
+        "Doluysa ürün indirimde sayılır. Eski fiyat üstü çizili, indirimli fiyat vurgulu gösterilir.",
+      validation: (Rule) =>
+        Rule.min(0).custom((value, ctx) => {
+          const price = (ctx.document as { price?: number } | undefined)?.price;
+          if (value === undefined || value === null) return true;
+          if (typeof price === "number" && value >= price) {
+            return "İndirimli fiyat, normal fiyattan düşük olmalı.";
+          }
+          return true;
+        }),
+    }),
+    defineField({
+      name: "saleBadge",
+      title: "İndirim rozeti metni",
+      type: "string",
+      description:
+        "Boş bırakırsanız otomatik olarak indirim yüzdesi yazılır (örn. %20).",
+    }),
+    defineField({
       name: "images",
       title: "Fotoğraflar",
       type: "array",
@@ -90,13 +113,17 @@ export const product = defineType({
       title: "title",
       media: "images.0",
       price: "price",
+      salePrice: "salePrice",
     },
-    prepare({ title, media, price }) {
-      return {
-        title,
-        subtitle: price ? `₺${price}` : undefined,
-        media,
-      };
+    prepare({ title, media, price, salePrice }) {
+      const hasSale =
+        typeof salePrice === "number" && salePrice > 0 && salePrice < price;
+      const subtitle = hasSale
+        ? `₺${salePrice}  (eski: ₺${price})  •  İNDİRİMDE`
+        : price
+        ? `₺${price}`
+        : undefined;
+      return { title, subtitle, media };
     },
   },
 });

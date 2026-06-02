@@ -3,16 +3,20 @@ import { ProductCard } from "./product-card";
 
 type ProductGridProps = {
   products: Product[];
+  emptyMessage?: string;
+  emptyDescription?: string;
 };
 
-export function ProductGrid({ products }: ProductGridProps) {
+export function ProductGrid({
+  products,
+  emptyMessage = "yakında burada...",
+  emptyDescription = "Yeni çantalar şu an tezgahta. Çok yakında paylaşacağım.",
+}: ProductGridProps) {
   if (products.length === 0) {
     return (
       <div className="rounded-3xl border border-dashed border-terracotta/40 bg-white/60 px-6 py-16 text-center">
-        <p className="font-hand text-2xl text-terracotta">yakında burada...</p>
-        <p className="mt-2 text-cocoa-soft">
-          Yeni çantalar şu an tezgahta. Çok yakında paylaşacağım.
-        </p>
+        <p className="font-hand text-2xl text-terracotta">{emptyMessage}</p>
+        <p className="mt-2 text-cocoa-soft">{emptyDescription}</p>
       </div>
     );
   }

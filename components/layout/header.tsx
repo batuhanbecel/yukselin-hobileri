@@ -15,14 +15,21 @@ import {
 import { NAV_LINKS, SITE_NAME, INSTAGRAM_URL } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
-export function Header() {
+type HeaderProps = {
+  siteTitle?: string;
+  tagline?: string;
+  instagramUrl?: string;
+};
+
+export function Header({ siteTitle, tagline, instagramUrl }: HeaderProps) {
   const [open, setOpen] = useState(false);
+  const title = siteTitle || SITE_NAME;
+  const igUrl = instagramUrl || INSTAGRAM_URL;
 
   return (
     <header className="sticky top-0 z-50 border-b border-terracotta-soft/30 bg-cream/85 backdrop-blur-md">
       <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-4 sm:px-6">
         <Link href="/" className="group flex items-center gap-3">
-          {/* Yarn ball logo */}
           <span className="relative inline-flex size-10 items-center justify-center rounded-full bg-terracotta-soft/50 transition-transform group-hover:rotate-12">
             <svg viewBox="0 0 32 32" className="size-7 text-terracotta" fill="none">
               <circle cx="16" cy="16" r="12" fill="currentColor" opacity="0.5" />
@@ -35,11 +42,13 @@ export function Header() {
           </span>
           <span className="flex flex-col leading-tight">
             <span className="font-heading text-xl tracking-tight text-cocoa sm:text-2xl">
-              {SITE_NAME}
+              {title}
             </span>
-            <span className="font-hand text-sm text-terracotta">
-              el emeği örgü
-            </span>
+            {tagline && (
+              <span className="font-hand text-sm text-terracotta">
+                {tagline}
+              </span>
+            )}
           </span>
         </Link>
 
@@ -58,7 +67,7 @@ export function Header() {
             size="sm"
             className="rounded-full border-0 bg-terracotta text-white shadow-sm hover:bg-terracotta/90"
           >
-            <Link href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">
+            <Link href={igUrl} target="_blank" rel="noopener noreferrer">
               <InstagramIcon />
               Instagram
             </Link>
@@ -74,11 +83,13 @@ export function Header() {
           <SheetContent side="right" className="bg-cream">
             <SheetHeader>
               <SheetTitle className="font-heading text-left text-2xl">
-                {SITE_NAME}
+                {title}
               </SheetTitle>
-              <p className="font-hand text-left text-lg text-terracotta">
-                hoş geldin
-              </p>
+              {tagline && (
+                <p className="font-hand text-left text-lg text-terracotta">
+                  {tagline}
+                </p>
+              )}
             </SheetHeader>
             <nav className="mt-8 flex flex-col gap-4 px-4">
               {NAV_LINKS.map((link) => (
@@ -98,7 +109,7 @@ export function Header() {
                 className="mt-6 rounded-full border-0 bg-terracotta text-white hover:bg-terracotta/90"
               >
                 <Link
-                  href={INSTAGRAM_URL}
+                  href={igUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => setOpen(false)}
