@@ -1,4 +1,4 @@
-# Yükselin Hobileri
+# Yüksel'in Hobileri
 
 El emeği örgü çantalar vitrin sitesi. Satış yok; siparişler [Instagram @ykslbcl](https://www.instagram.com/ykslbcl/) üzerinden alınır.
 

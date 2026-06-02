@@ -8,7 +8,7 @@ const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
 
 export default defineConfig({
   name: "default",
-  title: "Yükselin Hobileri",
+  title: "Yüksel'in Hobileri",
   projectId: projectId || "placeholder",
   dataset,
   /** Must match the Next.js route: /studio */

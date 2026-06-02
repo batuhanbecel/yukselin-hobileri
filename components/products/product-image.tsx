@@ -12,10 +12,10 @@ type ProductImageProps = {
 };
 
 const PLACEHOLDER_GRADIENTS = [
-  "from-pink-100 via-rose-50 to-pink-200",
-  "from-violet-100 via-purple-50 to-lavender-100",
-  "from-amber-50 via-orange-50 to-peach-100",
-  "from-emerald-50 via-teal-50 to-sage-100",
+  "from-terracotta-soft/50 via-cream-deep to-rose-dust/40",
+  "from-sage-soft/60 via-cream-deep to-sage/30",
+  "from-cream-deep via-honey/30 to-terracotta-soft/40",
+  "from-rose-dust/40 via-cream to-terracotta-soft/50",
 ];
 
 function placeholderGradient(title: string) {
@@ -38,18 +38,29 @@ export function ProductImage({
     return (
       <div
         className={cn(
-          "relative flex aspect-[4/5] w-full items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br",
+          "relative flex aspect-[4/5] w-full items-center justify-center overflow-hidden rounded-sm bg-gradient-to-br",
           placeholderGradient(title),
           className
         )}
         aria-label={title}
       >
         <div className="text-center px-6">
-          <span className="text-5xl" role="img" aria-hidden>
-            🧶
-          </span>
-          <p className="mt-3 font-heading text-sm text-foreground/60">
-            Fotoğraf yakında
+          <svg
+            className="mx-auto size-14 text-terracotta/60"
+            viewBox="0 0 100 100"
+            fill="none"
+            aria-hidden
+          >
+            <circle cx="50" cy="50" r="32" fill="currentColor" opacity="0.4" />
+            <path
+              d="M20 50 Q 50 20, 80 50 M 20 50 Q 50 80, 80 50 M 35 25 Q 50 50, 65 75 M 35 75 Q 50 50, 65 25"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              opacity="0.7"
+            />
+          </svg>
+          <p className="font-hand mt-2 text-xl text-terracotta/80">
+            fotoğraf yakında
           </p>
         </div>
       </div>
@@ -61,7 +72,7 @@ export function ProductImage({
   return (
     <div
       className={cn(
-        "relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-muted",
+        "relative aspect-[4/5] w-full overflow-hidden rounded-sm bg-muted",
         className
       )}
     >

@@ -9,7 +9,7 @@ export const siteSettings = defineType({
       name: "siteTitle",
       title: "Site Başlığı",
       type: "string",
-      initialValue: "Yükselin Hobileri",
+      initialValue: "Yüksel'in Hobileri",
     }),
     defineField({
       name: "instagramUrl",

@@ -38,11 +38,11 @@ export const mockProducts: Product[] = [
 ];
 
 export const mockSiteSettings: SiteSettings = {
-  siteTitle: "Yükselin Hobileri",
+  siteTitle: "Yüksel'in Hobileri",
   instagramUrl: "https://www.instagram.com/ykslbcl/",
   heroTitle: "El emeği örgü çantalar",
   heroSubtitle:
-    "Her biri sevgiyle örülmüş, benzersiz çantalar. Sipariş ve bilgi için Instagram'dan bize ulaşın.",
+    "Her biri sevgiyle örülmüş, benzersiz çantalar. Sipariş ve bilgi için Instagram sayfamızdan iletişime geçebilirsiniz.",
   aboutText: [
     {
       _type: "block",
@@ -53,7 +53,7 @@ export const mockSiteSettings: SiteSettings = {
         {
           _type: "span",
           _key: "span1",
-          text: "Yükselin Hobileri'nde her çanta el emeğiyle, tek tek örülür. Annemizin yılların deneyimi ve sevgisiyle hazırladığı örgü çantalar; günlük kullanımdan özel günlere kadar hayatınıza sıcak bir dokunuş katar.",
+          text: "Burada her çanta el emeğiyle, tek tek örülür. Yılların deneyimi ve sevgiyle hazırladığım örgü çantalar; günlük kullanımdan özel günlere kadar hayatınıza sıcak bir dokunuş katar.",
           marks: [],
         },
       ],
@@ -67,7 +67,7 @@ export const mockSiteSettings: SiteSettings = {
         {
           _type: "span",
           _key: "span2",
-          text: "Sipariş vermek veya özel tasarım talepleriniz için Instagram hesabımızdan bize yazmanız yeterli. Her çanta benzersizdir; stoklar sınırlıdır.",
+          text: "Sipariş vermek veya özel tasarım talepleriniz için Instagram hesabımızdan bana yazmanız yeterli. Her çanta benzersizdir; stoklar sınırlıdır.",
           marks: [],
         },
       ],

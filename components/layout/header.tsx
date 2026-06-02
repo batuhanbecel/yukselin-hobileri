@@ -19,13 +19,28 @@ export function Header() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-pink-100/60 bg-cream/90 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-        <Link
-          href="/"
-          className="font-heading text-xl tracking-tight text-foreground sm:text-2xl"
-        >
-          {SITE_NAME}
+    <header className="sticky top-0 z-50 border-b border-terracotta-soft/30 bg-cream/85 backdrop-blur-md">
+      <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-4 sm:px-6">
+        <Link href="/" className="group flex items-center gap-3">
+          {/* Yarn ball logo */}
+          <span className="relative inline-flex size-10 items-center justify-center rounded-full bg-terracotta-soft/50 transition-transform group-hover:rotate-12">
+            <svg viewBox="0 0 32 32" className="size-7 text-terracotta" fill="none">
+              <circle cx="16" cy="16" r="12" fill="currentColor" opacity="0.5" />
+              <path
+                d="M6 16 Q 16 6, 26 16 M 6 16 Q 16 26, 26 16 M 10 8 Q 16 16, 22 24 M 10 24 Q 16 16, 22 8"
+                stroke="currentColor"
+                strokeWidth="1.2"
+              />
+            </svg>
+          </span>
+          <span className="flex flex-col leading-tight">
+            <span className="font-heading text-xl tracking-tight text-cocoa sm:text-2xl">
+              {SITE_NAME}
+            </span>
+            <span className="font-hand text-sm text-terracotta">
+              el emeği örgü
+            </span>
+          </span>
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
@@ -33,7 +48,7 @@ export function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+              className="text-sm font-medium text-cocoa-soft transition-colors hover:text-terracotta"
             >
               {link.label}
             </Link>
@@ -41,7 +56,7 @@ export function Header() {
           <Button
             asChild
             size="sm"
-            className="border-0 bg-gradient-to-r from-[#f09433] via-[#e6683c] to-[#bc1888] text-white"
+            className="rounded-full border-0 bg-terracotta text-white shadow-sm hover:bg-terracotta/90"
           >
             <Link href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">
               <InstagramIcon />
@@ -58,18 +73,21 @@ export function Header() {
           </SheetTrigger>
           <SheetContent side="right" className="bg-cream">
             <SheetHeader>
-              <SheetTitle className="font-heading text-left">
+              <SheetTitle className="font-heading text-left text-2xl">
                 {SITE_NAME}
               </SheetTitle>
+              <p className="font-hand text-left text-lg text-terracotta">
+                hoş geldin
+              </p>
             </SheetHeader>
-            <nav className="mt-8 flex flex-col gap-4">
+            <nav className="mt-8 flex flex-col gap-4 px-4">
               {NAV_LINKS.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={() => setOpen(false)}
                   className={cn(
-                    "text-lg font-medium text-foreground transition-colors hover:text-primary"
+                    "font-heading text-2xl text-cocoa transition-colors hover:text-terracotta"
                   )}
                 >
                   {link.label}
@@ -77,7 +95,7 @@ export function Header() {
               ))}
               <Button
                 asChild
-                className="mt-4 border-0 bg-gradient-to-r from-[#f09433] via-[#e6683c] to-[#bc1888] text-white"
+                className="mt-6 rounded-full border-0 bg-terracotta text-white hover:bg-terracotta/90"
               >
                 <Link
                   href={INSTAGRAM_URL}

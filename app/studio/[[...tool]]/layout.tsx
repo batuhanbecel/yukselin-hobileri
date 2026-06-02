@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Yükselin Hobileri — İçerik Yönetimi",
+  title: "Yüksel'in Hobileri — İçerik Yönetimi",
 };
 
 export default function StudioLayout({

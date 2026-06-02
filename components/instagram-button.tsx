@@ -19,8 +19,8 @@ export function InstagramButton({
 }: InstagramButtonProps) {
   const href = instagramDmUrl(productTitle);
   const label = productTitle
-    ? "Instagram'dan Sipariş Ver"
-    : "Instagram'dan İletişime Geç";
+    ? "Instagram'dan sipariş ver"
+    : "Instagram'dan yaz";
 
   return (
     <Button
@@ -28,8 +28,9 @@ export function InstagramButton({
       size={size}
       className={cn(
         variant === "gradient" &&
-          "border-0 bg-gradient-to-r from-[#f09433] via-[#e6683c] to-[#bc1888] text-white shadow-md hover:opacity-90",
-        variant === "outline" && "border-pink-200 bg-white/80",
+          "rounded-full border-0 bg-terracotta text-white shadow-sm transition-all hover:bg-terracotta/90 hover:shadow-md",
+        variant === "outline" &&
+          "rounded-full border-terracotta/30 bg-white/70 text-cocoa hover:bg-terracotta-soft/30",
         className
       )}
       variant={variant === "outline" ? "outline" : "default"}

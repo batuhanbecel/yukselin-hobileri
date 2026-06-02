@@ -1,12 +1,19 @@
 import type { Metadata } from "next";
-import { DM_Serif_Display, Nunito } from "next/font/google";
+import { Fraunces, Caveat, Nunito } from "next/font/google";
 import { SITE_NAME } from "@/lib/constants";
 import "./globals.css";
 
-const dmSerif = DM_Serif_Display({
-  variable: "--font-dm-serif",
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
   subsets: ["latin"],
-  weight: "400",
+  weight: "variable",
+  axes: ["SOFT", "opsz"],
+});
+
+const caveat = Caveat({
+  variable: "--font-caveat",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 const nunito = Nunito({
@@ -21,11 +28,11 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`,
   },
   description:
-    "Yükselin Hobileri — el emeği örgü çantalar. Fiyatlar ve sipariş için Instagram'dan @ykslbcl hesabına ulaşın.",
-  keywords: ["örgü çanta", "el örgüsü", "el emeği", "Yükselin Hobileri"],
+    "Yüksel'in Hobileri — annemin sevgiyle ördüğü el emeği çantalar. Sipariş ve bilgi için Instagram @ykslbcl.",
+  keywords: ["örgü çanta", "el örgüsü", "el emeği", "Yüksel'in Hobileri"],
   openGraph: {
     title: SITE_NAME,
-    description: "El emeği örgü çantalar — Instagram'dan sipariş verin.",
+    description: "Annemin sevgiyle ördüğü el emeği çantalar.",
     locale: "tr_TR",
     type: "website",
   },
@@ -37,7 +44,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="tr" className={`${dmSerif.variable} ${nunito.variable} h-full`}>
+    <html
+      lang="tr"
+      className={`${fraunces.variable} ${caveat.variable} ${nunito.variable} h-full`}
+    >
       <body className="min-h-full antialiased">{children}</body>
     </html>
   );

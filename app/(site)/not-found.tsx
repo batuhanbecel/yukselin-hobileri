@@ -4,14 +4,30 @@ import { Button } from "@/components/ui/button";
 export default function NotFound() {
   return (
     <div className="mx-auto flex max-w-lg flex-col items-center px-4 py-24 text-center">
-      <span className="text-6xl" aria-hidden>
-        🧶
-      </span>
-      <h1 className="mt-6 font-heading text-3xl">Sayfa bulunamadı</h1>
-      <p className="mt-3 text-muted-foreground">
-        Aradığınız sayfa mevcut değil veya taşınmış olabilir.
+      <svg
+        className="size-20 text-terracotta/60"
+        viewBox="0 0 100 100"
+        fill="none"
+        aria-hidden
+      >
+        <circle cx="50" cy="50" r="32" fill="currentColor" opacity="0.4" />
+        <path
+          d="M20 50 Q 50 20, 80 50 M 20 50 Q 50 80, 80 50 M 35 25 Q 50 50, 65 75 M 35 75 Q 50 50, 65 25"
+          stroke="currentColor"
+          strokeWidth="1.5"
+        />
+      </svg>
+      <p className="font-hand mt-6 text-2xl text-terracotta">aman</p>
+      <h1 className="mt-1 font-heading text-4xl text-cocoa">
+        Sayfa bulunamadı
+      </h1>
+      <p className="mt-3 text-cocoa-soft">
+        Aradığın sayfa burada değil. Belki ipucu kayboldu.
       </p>
-      <Button asChild className="mt-8">
+      <Button
+        asChild
+        className="mt-8 rounded-full bg-terracotta text-white hover:bg-terracotta/90"
+      >
         <Link href="/">Ana sayfaya dön</Link>
       </Button>
     </div>
