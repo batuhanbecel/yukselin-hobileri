@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typegen": "sanity schema extract && sanity typegen generate"
+    "typegen": "sanity schema extract && sanity typegen generate",
+    "seed": "sanity exec scripts/seed.ts --with-user-token"
   },
   "dependencies": {
     "@portabletext/react": "^6.2.0",

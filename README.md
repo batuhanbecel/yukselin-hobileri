@@ -45,9 +45,16 @@ NEXT_PUBLIC_PLAUSIBLE_DOMAIN=yukselinhobileri.com
 4. [sanity.io/manage](https://www.sanity.io/manage) → projeniz → **API** → **CORS origins**:
    - `http://localhost:3000` (Allow credentials ✓)
    - Canlı domain (örn. `https://yukselinhobileri.com`)
-5. Studio'da soldaki menüden ilk kez şu belgeleri açıp kaydedin:
-   - 📄 **Sayfalar** › Ana Sayfa, Hakkımda, Ürünler, SSS
-   - ⚙️ **Genel Site Ayarları**
+5. **Singleton belgeleri seed'leyin** — mock-data'daki default içerikler Sanity'deki boş "Ana Sayfa", "Hakkımda", "Ürünler", "SSS" ve "Genel Ayarlar" belgelerine basılır:
+
+   ```bash
+   npx sanity login    # tarayıcı açılır, Google/GitHub ile gir
+   npm run seed
+   ```
+
+   ⚠️ Bu komut singleton belgelerin **üzerine yazar**. Studio'da değişiklik yaptıysan kaybedersin — sadece sıfırdan kurulum / sıfırlama için çalıştır.
+
+6. Studio'yu açıp belgelerin dolu olduğunu doğrulayın, istediğiniz gibi düzenleyin.
 
 > Singleton belgeler (Ayarlar, Sayfa belgeleri) sabittir; silinemez ve çoğaltılamaz.
 
