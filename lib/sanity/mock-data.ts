@@ -1,6 +1,7 @@
 import type {
   AboutPage,
   Category,
+  FaqPage,
   HomePage,
   Product,
   ProductsPage,
@@ -34,6 +35,15 @@ export const mockProducts: Product[] = [
     images: [],
     description:
       "Yumuşak pembe iplikle örülmüş, günlük kullanıma uygun şirin bir omuz çantası. El emeği, tek parça.",
+    dimensions: "28 × 32 cm",
+    material: "%100 pamuk ipi",
+    care: "30°C'de elde yıkanır",
+    colors: [
+      { _key: "c1", name: "Pembe", hex: "#e9b8a8" },
+      { _key: "c2", name: "Krem", hex: "#f3e8d4" },
+    ],
+    status: "available",
+    giftReady: true,
     featured: true,
     order: 1,
     category: cantaRef,
@@ -47,6 +57,12 @@ export const mockProducts: Product[] = [
     images: [],
     description:
       "Lavanta tonlarında, çapraz askılı zarif bir çanta. Her detayı özenle işlendi.",
+    dimensions: "22 × 26 cm",
+    material: "Pamuk + akrilik karışım",
+    care: "Soğuk suda elde yıkanır",
+    colors: [{ _key: "c1", name: "Lavanta", hex: "#c9b3d9" }],
+    status: "available",
+    giftReady: true,
     featured: true,
     order: 2,
     category: cantaRef,
@@ -59,6 +75,14 @@ export const mockProducts: Product[] = [
     images: [],
     description:
       "Krem rengi mini el çantası; özel günler ve günlük şıklık için ideal.",
+    dimensions: "18 × 14 cm",
+    material: "Jüt + pamuk",
+    care: "Nemli bezle silinir",
+    colors: [
+      { _key: "c1", name: "Krem", hex: "#f3e8d4" },
+      { _key: "c2", name: "Bej", hex: "#d9c4a7" },
+    ],
+    status: "sold",
     featured: true,
     order: 3,
     category: cantaRef,
@@ -70,6 +94,10 @@ export const mockProducts: Product[] = [
     price: 1450,
     images: [],
     description: "Sıcacık bej yün kazak; soğuk günlerin vazgeçilmezi.",
+    dimensions: "S / M / L",
+    material: "%70 yün, %30 akrilik",
+    care: "Kuru temizleme önerilir",
+    status: "made-to-order",
     featured: false,
     order: 4,
     category: kazakRef,
@@ -226,6 +254,45 @@ export const mockAboutPage: AboutPage = {
   ctaHandwritten: "bana ulaşabilirsiniz",
   ctaTitle: "Bir kahve eşliğinde konuşalım",
   ctaText: "Sorularını, özel taleplerinizi bana iletebilirsiniz.",
+};
+
+export const mockFaqPage: FaqPage = {
+  pageHandwritten: "merak ettikleriniz",
+  pageTitle: "Sıkça Sorulanlar",
+  pageDescription:
+    "Sipariş, kargo ve ürünlerle ilgili en sık aldığım soruları burada topladım.",
+  items: [
+    {
+      _key: "f1",
+      question: "Nasıl sipariş veririm?",
+      answer:
+        "Beğendiğiniz çantanın altındaki Instagram butonuna dokunarak bana yazabilirsiniz. Sohbet sırasında renk, model ve kargo detaylarını konuşuyoruz.",
+    },
+    {
+      _key: "f2",
+      question: "Bir çanta ne kadar sürede hazır oluyor?",
+      answer:
+        "Modeline göre değişir; küçük çantalar 3-5 gün, büyük çantalar 1-2 hafta sürebiliyor.",
+    },
+    {
+      _key: "f3",
+      question: "Özel renk veya model isteyebilir miyim?",
+      answer:
+        "Tabii ki. Aklınızdaki rengi veya modeli yazarsanız beraber karar veririz.",
+    },
+    {
+      _key: "f4",
+      question: "Kargo nasıl gönderiliyor?",
+      answer:
+        "Anlaşmalı kargo firmasıyla kapınıza kadar geliyor. Türkiye'nin her yerine gönderim yapıyorum.",
+    },
+    {
+      _key: "f5",
+      question: "Çantamı nasıl korurum?",
+      answer:
+        "Çantalar elde, 30 derece ılık suda yıkanır. Asılı değil düz şekilde kurutulmalıdır.",
+    },
+  ],
 };
 
 export const mockProductsPage: ProductsPage = {

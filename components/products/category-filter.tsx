@@ -19,13 +19,12 @@ export function CategoryFilter({ categories, activeSlug }: CategoryFilterProps) 
     <div className="mb-10 flex flex-wrap items-center justify-center gap-2">
       {items.map((cat) => {
         const slug = cat.slug.current;
-        const href = slug ? `/urunler?kategori=${slug}` : "/urunler";
+        const href = slug ? `/urunler/kategori/${slug}` : "/urunler";
         const isActive = slug ? activeSlug === slug : !activeSlug;
         return (
           <Link
             key={cat._id}
             href={href}
-            scroll={false}
             className={cn(
               "rounded-full border px-4 py-1.5 text-sm font-medium transition-colors",
               isActive

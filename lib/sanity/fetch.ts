@@ -3,6 +3,7 @@ import { isSanityConfigured } from "./config";
 import {
   aboutPageQuery,
   categoriesQuery,
+  faqPageQuery,
   featuredProductsQuery,
   homePageQuery,
   productBySlugQuery,
@@ -10,11 +11,13 @@ import {
   productsByCategoryQuery,
   productsPageQuery,
   productsQuery,
+  relatedProductsQuery,
   siteSettingsQuery,
 } from "./queries";
 import type {
   AboutPage,
   Category,
+  FaqPage,
   HomePage,
   Product,
   ProductsPage,
@@ -23,6 +26,7 @@ import type {
 import {
   mockAboutPage,
   mockCategories,
+  mockFaqPage,
   mockHomePage,
   mockProducts,
   mockProductsPage,
@@ -192,6 +196,53 @@ export async function getAboutPage(): Promise<AboutPage> {
     return withDefaults(mockAboutPage, data);
   } catch {
     return mockAboutPage;
+  }
+}
+
+export async function getRelatedProducts(
+  product: Product,
+  limit = 4
+): Promise<Product[]> {
+  const fallback = mockProducts
+    .filter(
+      (p) =>
+        p._id !== product._id &&
+        (!product.category ||
+          p.category?.slug.current === product.category.slug.current)
+    )
+    .slice(0, limit);
+
+  if (!isSanityConfigured) return fallback;
+  const client = getSanityClient();
+  if (!client) return fallback;
+  try {
+    const items = await client.fetch<Product[]>(
+      relatedProductsQuery,
+      {
+        excludeId: product._id,
+        categoryRef: product.category?._id ?? "",
+      },
+      { next: { revalidate } }
+    );
+    return items.length > 0 ? items.slice(0, limit) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+export async function getFaqPage(): Promise<FaqPage> {
+  if (!isSanityConfigured) return mockFaqPage;
+  const client = getSanityClient();
+  if (!client) return mockFaqPage;
+  try {
+    const data = await client.fetch<FaqPage | null>(
+      faqPageQuery,
+      {},
+      { next: { revalidate } }
+    );
+    return withDefaults(mockFaqPage, data);
+  } catch {
+    return mockFaqPage;
   }
 }
 

@@ -7,6 +7,12 @@ const PRODUCT_PROJECTION = `{
   saleBadge,
   images,
   description,
+  dimensions,
+  material,
+  care,
+  colors,
+  status,
+  giftReady,
   featured,
   order,
   shopierUrl,
@@ -24,6 +30,15 @@ export const productBySlugQuery = `*[_type == "product" && slug.current == $slug
 export const productSlugsQuery = `*[_type == "product" && defined(slug.current)] {
   "slug": slug.current
 }`;
+
+export const relatedProductsQuery = `*[
+  _type == "product"
+  && _id != $excludeId
+  && (
+    category._ref == $categoryRef
+    || count(*[_type == "product" && _id == $excludeId][0].category._ref) == 0
+  )
+] | order(order asc, _createdAt desc) [0...4] ${PRODUCT_PROJECTION}`;
 
 export const categoriesQuery = `*[_type == "category"] | order(order asc, title asc) {
   _id,
@@ -92,4 +107,11 @@ export const productsPageQuery = `*[_type == "productsPage"][0]{
   pageDescription,
   emptyMessage,
   emptyDescription
+}`;
+
+export const faqPageQuery = `*[_type == "faqPage"][0]{
+  pageHandwritten,
+  pageTitle,
+  pageDescription,
+  items
 }`;

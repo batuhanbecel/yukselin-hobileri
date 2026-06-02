@@ -16,6 +16,14 @@ export type Category = {
   order?: number;
 };
 
+export type ProductStatus = "available" | "made-to-order" | "sold";
+
+export type ProductColor = {
+  _key?: string;
+  name: string;
+  hex?: string;
+};
+
 export type Product = {
   _id: string;
   title: string;
@@ -25,10 +33,29 @@ export type Product = {
   saleBadge?: string;
   images: SanityImage[];
   description?: string;
+  dimensions?: string;
+  material?: string;
+  care?: string;
+  colors?: ProductColor[];
+  status?: ProductStatus;
+  giftReady?: boolean;
   featured?: boolean;
   order?: number;
   category?: Pick<Category, "_id" | "title"> & { slug: { current: string } };
   shopierUrl?: string;
+};
+
+export type FaqItem = {
+  _key?: string;
+  question: string;
+  answer: string;
+};
+
+export type FaqPage = {
+  pageHandwritten?: string;
+  pageTitle?: string;
+  pageDescription?: string;
+  items?: FaqItem[];
 };
 
 export type Highlight = {

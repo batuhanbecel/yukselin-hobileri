@@ -1,9 +1,11 @@
 import Link from "next/link";
+import { Gift } from "lucide-react";
 import { InstagramButton } from "@/components/instagram-button";
 import { computeSale, formatPrice } from "@/lib/format";
 import type { Product } from "@/lib/sanity/types";
 import { cn } from "@/lib/utils";
 import { ProductImage } from "./product-image";
+import { StatusBadge } from "./status-badge";
 
 type ProductCardProps = {
   product: Product;
@@ -17,6 +19,7 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
   const slug = product.slug.current;
   const wobble = WOBBLES[index % WOBBLES.length];
   const sale = computeSale(product.price, product.salePrice);
+  const isSold = product.status === "sold";
   const badgeText =
     product.saleBadge?.trim() ||
     (sale.onSale && sale.percentOff ? `%${sale.percentOff} indirim` : null);
@@ -34,14 +37,20 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
           wobble
         )}
       >
-        {sale.onSale && badgeText && (
+        {!isSold && sale.onSale && badgeText && (
           <span className="absolute -top-2 -right-2 z-10 rotate-6 rounded-full border-2 border-white bg-terracotta px-3 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-md">
             {badgeText}
           </span>
         )}
 
+        {isSold && (
+          <span className="absolute -top-2 -right-2 z-10 rotate-6 rounded-full border-2 border-white bg-cocoa px-3 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-md">
+            Satıldı
+          </span>
+        )}
+
         <Link href={`/urunler/${slug}`} className="block">
-          <div className="overflow-hidden rounded-sm">
+          <div className={cn("relative overflow-hidden rounded-sm", isSold && "opacity-70")}>
             <ProductImage
               image={product.images?.[0]}
               title={product.title}
@@ -51,7 +60,19 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
           </div>
 
           <div className="space-y-1 px-1 pt-4 pb-1 text-center">
-            {product.featured && !sale.onSale && (
+            <div className="flex flex-wrap items-center justify-center gap-1.5">
+              {product.status && product.status !== "available" && !isSold && (
+                <StatusBadge status={product.status} />
+              )}
+              {product.giftReady && !isSold && (
+                <span className="inline-flex items-center gap-1 rounded-full border border-honey/40 bg-honey/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#8a5a1f]">
+                  <Gift className="size-3" />
+                  Hediye paketli
+                </span>
+              )}
+            </div>
+
+            {product.featured && !sale.onSale && !isSold && (
               <p className="font-hand text-base text-terracotta">
                 özel parça
               </p>
@@ -77,13 +98,15 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
           </div>
         </Link>
 
-        <div className="mt-3 px-1">
-          <InstagramButton
-            productTitle={product.title}
-            size="sm"
-            className="w-full"
-          />
-        </div>
+        {!isSold && (
+          <div className="mt-3 px-1">
+            <InstagramButton
+              productTitle={product.title}
+              size="sm"
+              className="w-full"
+            />
+          </div>
+        )}
       </div>
     </div>
   );

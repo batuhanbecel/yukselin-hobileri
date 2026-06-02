@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Fraunces, Caveat, Nunito } from "next/font/google";
-import { SITE_NAME } from "@/lib/constants";
+import { SITE_NAME, SITE_URL } from "@/lib/constants";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -23,6 +24,7 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: `${SITE_NAME} | El Emeği Örgü Çantalar`,
     template: `%s | ${SITE_NAME}`,
@@ -31,11 +33,35 @@ export const metadata: Metadata = {
     "Yüksel'in Hobileri — annemin sevgiyle ördüğü el emeği çantalar. Sipariş ve bilgi için Instagram @ykslbcl.",
   keywords: ["örgü çanta", "el örgüsü", "el emeği", "Yüksel'in Hobileri"],
   openGraph: {
+    siteName: SITE_NAME,
     title: SITE_NAME,
     description: "Annemin sevgiyle ördüğü el emeği çantalar.",
     locale: "tr_TR",
     type: "website",
+    url: SITE_URL,
   },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_NAME,
+    description: "Annemin sevgiyle ördüğü el emeği çantalar.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
+const plausibleDomain = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN;
+const plausibleSrc =
+  process.env.NEXT_PUBLIC_PLAUSIBLE_SRC || "https://plausible.io/js/script.js";
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: SITE_NAME,
+  url: SITE_URL,
+  logo: `${SITE_URL}/icon`,
+  sameAs: ["https://www.instagram.com/ykslbcl/"],
 };
 
 export default function RootLayout({
@@ -48,7 +74,25 @@ export default function RootLayout({
       lang="tr"
       className={`${fraunces.variable} ${caveat.variable} ${nunito.variable} h-full`}
     >
-      <body className="min-h-full antialiased">{children}</body>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationJsonLd),
+          }}
+        />
+      </head>
+      <body className="min-h-full antialiased">
+        {children}
+        {plausibleDomain && (
+          <Script
+            defer
+            src={plausibleSrc}
+            data-domain={plausibleDomain}
+            strategy="afterInteractive"
+          />
+        )}
+      </body>
     </html>
   );
 }

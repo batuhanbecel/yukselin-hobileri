@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Breadcrumb } from "@/components/breadcrumb";
 import { CategoryFilter } from "@/components/products/category-filter";
 import { ProductGrid } from "@/components/products/product-grid";
 import {
@@ -13,32 +14,30 @@ export const metadata: Metadata = {
     "Annemin el emeğiyle ördüğü tüm çantalar. Sipariş için Instagram.",
 };
 
-type PageProps = {
-  searchParams: Promise<{ kategori?: string }>;
-};
-
-export default async function ProductsPage({ searchParams }: PageProps) {
-  const { kategori } = await searchParams;
+export default async function ProductsPage() {
   const [products, categories, page] = await Promise.all([
-    getProducts(kategori),
+    getProducts(),
     getCategories(),
     getProductsPage(),
   ]);
 
-  const activeCategory = categories.find((c) => c.slug.current === kategori);
-  const heading = activeCategory ? activeCategory.title : page.pageTitle;
-
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
+      <Breadcrumb
+        items={[
+          { label: "Ana sayfa", href: "/" },
+          { label: page.pageTitle || "Ürünler" },
+        ]}
+      />
       <div className="relative mb-10 text-center">
         {page.pageHandwritten && (
           <p className="font-hand text-2xl text-terracotta">
             {page.pageHandwritten}
           </p>
         )}
-        {heading && (
+        {page.pageTitle && (
           <h1 className="font-heading text-5xl text-cocoa sm:text-6xl">
-            {heading}
+            {page.pageTitle}
           </h1>
         )}
         <div className="mx-auto mt-4 h-px w-24 text-terracotta/40 stitch-border" />
@@ -49,7 +48,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
         )}
       </div>
 
-      <CategoryFilter categories={categories} activeSlug={kategori} />
+      <CategoryFilter categories={categories} />
 
       <ProductGrid
         products={products}
