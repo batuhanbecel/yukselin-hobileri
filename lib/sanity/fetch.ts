@@ -33,7 +33,8 @@ import {
   mockSiteSettings,
 } from "./mock-data";
 
-const revalidate = 60;
+// Dev'de Next önbelleğini kapat (anlık yenileme), prod'da 30 saniye.
+const revalidate = process.env.NODE_ENV === "production" ? 30 : 0;
 
 function filterMockByCategory(slug?: string): Product[] {
   if (!slug) return mockProducts;

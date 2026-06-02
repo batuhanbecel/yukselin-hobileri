@@ -35,6 +35,9 @@ NEXT_PUBLIC_SITE_URL=https://yukselinhobileri.com
 NEXT_PUBLIC_PLAUSIBLE_DOMAIN=yukselinhobileri.com
 # Özel host kullanıyorsan, default plausible.io
 # NEXT_PUBLIC_PLAUSIBLE_SRC=https://plausible.io/js/script.js
+
+# Sanity → siteyi anında güncellemek için webhook secret
+SANITY_WEBHOOK_SECRET=long-random-string
 ```
 
 ## Sanity Kurulumu
@@ -57,6 +60,39 @@ NEXT_PUBLIC_PLAUSIBLE_DOMAIN=yukselinhobileri.com
 6. Studio'yu açıp belgelerin dolu olduğunu doğrulayın, istediğiniz gibi düzenleyin.
 
 > Singleton belgeler (Ayarlar, Sayfa belgeleri) sabittir; silinemez ve çoğaltılamaz.
+
+### Anında güncelleme (webhook)
+
+Üretimde Sanity CDN (~1 dk) + Next ISR (30 sn) cache'leri vardır. Publish'lediğinde site **anında** güncellensin istiyorsan:
+
+1. Uzun bir secret üret:
+   ```bash
+   openssl rand -hex 32
+   # veya: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+   ```
+2. Vercel → Project → Settings → Environment Variables:
+   - `SANITY_WEBHOOK_SECRET` = yukarıdaki secret
+   - Redeploy et
+3. [sanity.io/manage](https://www.sanity.io/manage) → projen → **API** → **Webhooks** → Create webhook:
+   - **Name:** Revalidate site
+   - **URL:** `https://yukselinhobileri.com/api/revalidate?secret=AYNI_SECRET`
+   - **Dataset:** `production`
+   - **Trigger on:** `Create`, `Update`, `Delete`
+   - **Filter:** `_type in ["homePage","aboutPage","productsPage","faqPage","siteSettings","product","category"]`
+   - **Projection (Body):**
+     ```json
+     {
+       "_type": _type,
+       "_id": _id,
+       "slug": slug.current,
+       "categorySlug": category->slug.current
+     }
+     ```
+   - **HTTP method:** `POST`
+   - Save
+4. Test: Studio'da bir belge publish et — Sanity webhook log'unda `200 OK` görmelisin, site saniyeler içinde güncellenir.
+
+> Endpoint `https://yukselinhobileri.com/api/revalidate` browser'dan açılırsa "POST kabul eder" mesajı döner. 401 dönüyorsa secret yanlış.
 
 ## Sayfa & Yönlendirme Haritası
 

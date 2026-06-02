@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Gift } from "lucide-react";
 import { InstagramButton } from "@/components/instagram-button";
+import { ShopierButton } from "@/components/shopier-button";
 import { computeSale, formatPrice } from "@/lib/format";
 import type { Product } from "@/lib/sanity/types";
 import { cn } from "@/lib/utils";
@@ -99,12 +100,19 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
         </Link>
 
         {!isSold && (
-          <div className="mt-3 px-1">
+          <div className="mt-3 flex flex-col gap-2 px-1">
             <InstagramButton
               productTitle={product.title}
               size="sm"
               className="w-full"
             />
+            {product.shopierUrl && (
+              <ShopierButton
+                url={product.shopierUrl}
+                size="sm"
+                className="w-full"
+              />
+            )}
           </div>
         )}
       </div>

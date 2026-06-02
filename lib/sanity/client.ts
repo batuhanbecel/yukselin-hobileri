@@ -8,7 +8,9 @@ export function getSanityClient(): SanityClient | null {
   if (!clientInstance) {
     clientInstance = createClient({
       ...sanityConfig,
-      useCdn: true,
+      // Dev ortamında CDN'i kapat — Studio'daki değişiklikler anında yansısın.
+      // Prod'da CDN açık (~1 dk önbellek), Next ISR ile birlikte hızlı.
+      useCdn: process.env.NODE_ENV === "production",
       stega: { enabled: false },
     });
   }
