@@ -44,10 +44,26 @@ export const product = defineType({
       validation: (Rule) => Rule.required().min(1),
     }),
     defineField({
+      name: "category",
+      title: "Kategori",
+      type: "reference",
+      to: [{ type: "category" }],
+      description: "Çanta, kazak, hırka vb.",
+    }),
+    defineField({
       name: "description",
       title: "Açıklama",
       type: "text",
       rows: 4,
+    }),
+    defineField({
+      name: "shopierUrl",
+      title: "Shopier Linki",
+      type: "url",
+      description:
+        "İsteğe bağlı. Doluysa ürün altında 'Shopier'dan satın al' butonu çıkar.",
+      validation: (Rule) =>
+        Rule.uri({ scheme: ["http", "https"], allowRelative: false }),
     }),
     defineField({
       name: "featured",

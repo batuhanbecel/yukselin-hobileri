@@ -1,25 +1,39 @@
 import { getSanityClient } from "./client";
 import { isSanityConfigured } from "./config";
 import {
+  categoriesQuery,
   featuredProductsQuery,
   productBySlugQuery,
   productSlugsQuery,
+  productsByCategoryQuery,
   productsQuery,
   siteSettingsQuery,
 } from "./queries";
-import type { Product, SiteSettings } from "./types";
-import { mockProducts, mockSiteSettings } from "./mock-data";
+import type { Category, Product, SiteSettings } from "./types";
+import { mockCategories, mockProducts, mockSiteSettings } from "./mock-data";
 
 const revalidate = 60;
 
-export async function getProducts(): Promise<Product[]> {
-  if (!isSanityConfigured) return mockProducts;
+function filterMockByCategory(slug?: string): Product[] {
+  if (!slug) return mockProducts;
+  return mockProducts.filter((p) => p.category?.slug.current === slug);
+}
+
+export async function getProducts(categorySlug?: string): Promise<Product[]> {
+  if (!isSanityConfigured) return filterMockByCategory(categorySlug);
   const client = getSanityClient();
-  if (!client) return mockProducts;
+  if (!client) return filterMockByCategory(categorySlug);
   try {
+    if (categorySlug) {
+      return await client.fetch<Product[]>(
+        productsByCategoryQuery,
+        { categorySlug },
+        { next: { revalidate } }
+      );
+    }
     return await client.fetch<Product[]>(productsQuery, {}, { next: { revalidate } });
   } catch {
-    return mockProducts;
+    return filterMockByCategory(categorySlug);
   }
 }
 
@@ -79,6 +93,22 @@ export async function getProductSlugs(): Promise<string[]> {
     return slugs.map((s) => s.slug);
   } catch {
     return mockProducts.map((p) => p.slug.current);
+  }
+}
+
+export async function getCategories(): Promise<Category[]> {
+  if (!isSanityConfigured) return mockCategories;
+  const client = getSanityClient();
+  if (!client) return mockCategories;
+  try {
+    const cats = await client.fetch<Category[]>(
+      categoriesQuery,
+      {},
+      { next: { revalidate } }
+    );
+    return cats.length > 0 ? cats : mockCategories;
+  } catch {
+    return mockCategories;
   }
 }
 

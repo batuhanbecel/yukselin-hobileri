@@ -3,11 +3,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { InstagramButton } from "@/components/instagram-button";
 import { ProductGallery } from "@/components/products/product-gallery";
+import { ShopierButton } from "@/components/shopier-button";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/format";
 import {
   getProductBySlug,
   getProductSlugs,
+  getSiteSettings,
 } from "@/lib/sanity/fetch";
 
 type PageProps = {
@@ -35,9 +37,14 @@ export async function generateMetadata({
 
 export default async function ProductDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const product = await getProductBySlug(slug);
+  const [product, settings] = await Promise.all([
+    getProductBySlug(slug),
+    getSiteSettings(),
+  ]);
 
   if (!product) notFound();
+
+  const shopierUrl = product.shopierUrl || settings.shopierStoreUrl;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
@@ -55,9 +62,19 @@ export default async function ProductDetailPage({ params }: PageProps) {
         </div>
 
         <div className="flex flex-col justify-center space-y-6">
-          {product.featured && (
-            <p className="font-hand text-2xl text-terracotta">özel parça</p>
-          )}
+          <div className="flex items-center gap-3">
+            {product.category?.title && (
+              <Link
+                href={`/urunler?kategori=${product.category.slug.current}`}
+                className="rounded-full border border-terracotta/30 bg-white/60 px-3 py-1 text-xs font-medium text-cocoa hover:bg-terracotta-soft/30"
+              >
+                {product.category.title}
+              </Link>
+            )}
+            {product.featured && (
+              <p className="font-hand text-2xl text-terracotta">özel parça</p>
+            )}
+          </div>
 
           <div>
             <h1 className="font-heading text-4xl leading-tight text-cocoa sm:text-5xl">
@@ -85,11 +102,20 @@ export default async function ProductDetailPage({ params }: PageProps) {
             </p>
           </div>
 
-          <InstagramButton
-            productTitle={product.title}
-            size="lg"
-            className="w-full sm:w-auto"
-          />
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <InstagramButton
+              productTitle={product.title}
+              size="lg"
+              className="w-full sm:w-auto"
+            />
+            {shopierUrl && (
+              <ShopierButton
+                url={shopierUrl}
+                size="lg"
+                className="w-full sm:w-auto"
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>

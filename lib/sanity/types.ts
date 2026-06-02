@@ -9,6 +9,13 @@ export type SanityImage = {
   alt?: string;
 };
 
+export type Category = {
+  _id: string;
+  title: string;
+  slug: { current: string };
+  order?: number;
+};
+
 export type Product = {
   _id: string;
   title: string;
@@ -18,6 +25,8 @@ export type Product = {
   description?: string;
   featured?: boolean;
   order?: number;
+  category?: Pick<Category, "_id" | "title"> & { slug: { current: string } };
+  shopierUrl?: string;
 };
 
 export type SiteSettings = {
@@ -27,4 +36,5 @@ export type SiteSettings = {
   heroSubtitle?: string;
   aboutText?: PortableTextBlock[];
   whatsappNumber?: string;
+  shopierStoreUrl?: string;
 };

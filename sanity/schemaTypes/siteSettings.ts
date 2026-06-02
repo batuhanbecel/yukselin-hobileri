@@ -43,6 +43,15 @@ export const siteSettings = defineType({
       type: "string",
       description: "Örnek: 905551234567",
     }),
+    defineField({
+      name: "shopierStoreUrl",
+      title: "Shopier Mağaza Linki (opsiyonel)",
+      type: "url",
+      description:
+        "Ürün başına ayrı bir Shopier linki tanımlamadıysanız, genel mağaza linki burada kullanılır.",
+      validation: (Rule) =>
+        Rule.uri({ scheme: ["http", "https"], allowRelative: false }),
+    }),
   ],
   preview: {
     prepare() {
