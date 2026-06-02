@@ -47,7 +47,12 @@ export const categoriesQuery = `*[_type == "category"] | order(order asc, title 
   order
 }`;
 
-export const siteSettingsQuery = `*[_type == "siteSettings"][0] {
+/**
+ * NOT: Aşağıdaki singleton sorguları belgenin SABİT ID'sini hedefler
+ * (structure.ts → S.document().documentId("homePage") ile yazılan ID).
+ * Bu sayede yanlışlıkla oluşmuş ikinci bir belge varsa karışıklık olmaz.
+ */
+export const siteSettingsQuery = `*[_id == "siteSettings"][0] {
   siteTitle,
   instagramUrl,
   instagramHandle,
@@ -65,7 +70,7 @@ export const siteSettingsQuery = `*[_type == "siteSettings"][0] {
   aboutText
 }`;
 
-export const homePageQuery = `*[_type == "homePage"][0]{
+export const homePageQuery = `*[_id == "homePage"][0]{
   heroGreeting,
   heroBadge,
   heroTitleStart,
@@ -90,7 +95,7 @@ export const homePageQuery = `*[_type == "homePage"][0]{
   quoteAuthor
 }`;
 
-export const aboutPageQuery = `*[_type == "aboutPage"][0]{
+export const aboutPageQuery = `*[_id == "aboutPage"][0]{
   pageHandwritten,
   pageTitle,
   story,
@@ -101,7 +106,7 @@ export const aboutPageQuery = `*[_type == "aboutPage"][0]{
   ctaText
 }`;
 
-export const productsPageQuery = `*[_type == "productsPage"][0]{
+export const productsPageQuery = `*[_id == "productsPage"][0]{
   pageHandwritten,
   pageTitle,
   pageDescription,
@@ -109,7 +114,7 @@ export const productsPageQuery = `*[_type == "productsPage"][0]{
   emptyDescription
 }`;
 
-export const faqPageQuery = `*[_type == "faqPage"][0]{
+export const faqPageQuery = `*[_id == "faqPage"][0]{
   pageHandwritten,
   pageTitle,
   pageDescription,
