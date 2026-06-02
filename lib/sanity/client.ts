@@ -8,9 +8,11 @@ export function getSanityClient(): SanityClient | null {
   if (!clientInstance) {
     clientInstance = createClient({
       ...sanityConfig,
-      // Dev ortamında CDN'i kapat — Studio'daki değişiklikler anında yansısın.
-      // Prod'da CDN açık (~1 dk önbellek), Next ISR ile birlikte hızlı.
-      useCdn: process.env.NODE_ENV === "production",
+      // useCdn: false — Sanity CDN ~1 dk stale olabiliyor; webhook ile
+      // revalidatePath çağırdıktan sonra bile CDN eski veriyi veriyordu.
+      // Doğrudan API'den çekince webhook + ISR akışı anlık çalışıyor.
+      // Vitrin sitesi için API rate limit fazlasıyla yeterli.
+      useCdn: false,
       stega: { enabled: false },
     });
   }
