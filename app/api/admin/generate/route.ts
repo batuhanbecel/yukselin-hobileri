@@ -24,8 +24,9 @@ import {
   FAL_UPSCALE_MODEL,
 } from "@/lib/fal-config";
 import { fal, isFalConfigured } from "@/lib/fal";
+import { getFalErrorMessage } from "@/lib/fal-errors";
 
-export const maxDuration = 60;
+export const maxDuration = 300;
 export const runtime = "nodejs";
 
 const DEFAULT_PRODUCT_NAME = "handmade crochet bag";
@@ -107,7 +108,12 @@ export async function POST(req: Request) {
   const modeField = formData.get("mode");
   const productNameField = formData.get("productName");
   const styleField = formData.get("style");
-  const skipUpscale = formData.get("skipUpscale") === "1";
+  const skipUpscaleField = formData.get("skipUpscale");
+  // Varsayılan: upscale kapalı (daha hızlı, timeout riski düşük). Açmak için skipUpscale=0
+  const skipUpscale =
+    skipUpscaleField === null || skipUpscaleField === ""
+      ? true
+      : skipUpscaleField !== "0";
   const mode = modeField === "lifestyle" ? "lifestyle" : "product";
 
   const productName =
@@ -194,7 +200,7 @@ export async function POST(req: Request) {
     });
   } catch (err) {
     console.error("[admin/generate] error:", err);
-    const message = err instanceof Error ? err.message : "Bilinmeyen hata.";
+    const message = getFalErrorMessage(err);
     return NextResponse.json(
       { error: `Üretim başarısız: ${message}` },
       { status: 500 }

@@ -11,10 +11,11 @@ export function middleware(req: NextRequest) {
   const expected = process.env.ADMIN_PASSWORD;
 
   if (!expected) {
-    return new NextResponse(
-      "Admin paneli için ADMIN_PASSWORD env değişkeni tanımlı değil.",
-      { status: 500 }
-    );
+    const message = "Admin paneli için ADMIN_PASSWORD env değişkeni tanımlı değil.";
+    if (req.nextUrl.pathname.startsWith("/api/admin")) {
+      return NextResponse.json({ error: message }, { status: 500 });
+    }
+    return new NextResponse(message, { status: 500 });
   }
 
   const auth = req.headers.get("authorization");
@@ -22,6 +23,12 @@ export function middleware(req: NextRequest) {
   const expectedHeader = `Basic ${encoded}`;
 
   if (auth !== expectedHeader) {
+    if (req.nextUrl.pathname.startsWith("/api/admin")) {
+      return NextResponse.json(
+        { error: "Yetkilendirme gerekli." },
+        { status: 401 }
+      );
+    }
     return new NextResponse("Yetkilendirme gerekli.", {
       status: 401,
       headers: {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import { parseApiResponse } from "@/lib/parse-api-response";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "motion/react";
@@ -129,12 +130,18 @@ export function NewProductForm({ categories }: Props) {
           method: "POST",
           body: fd,
         });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Üretim başarısız.");
+        const parsed = await parseApiResponse<{
+          error?: string;
+          inputUrl?: string;
+          generatedUrl?: string;
+          upscaled?: boolean;
+        }>(res);
+        if (!parsed.ok) throw new Error(parsed.error);
+        const data = parsed.data;
         if (data.inputUrl && !inputUrl) setInputUrl(data.inputUrl);
         setter({
           status: "ready",
-          generatedUrl: data.generatedUrl,
+          generatedUrl: data.generatedUrl!,
           upscaled: Boolean(data.upscaled),
         });
       } catch (err) {
@@ -146,7 +153,9 @@ export function NewProductForm({ categories }: Props) {
   );
 
   const generateBoth = useCallback(async () => {
-    await Promise.all([generateSlot("product"), generateSlot("lifestyle")]);
+    // Paralel iki Fal isteği timeout/rate-limit riski — sırayla üret
+    await generateSlot("product");
+    await generateSlot("lifestyle");
   }, [generateSlot]);
 
   const downloadImage = async (url: string, filename: string) => {

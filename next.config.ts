@@ -1,6 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  experimental: {
+    // Admin ham fotoğraf upload (FormData) — Next 16 proxy kesmesin
+    proxyClientMaxBodySize: "15mb",
+    serverActions: {
+      bodySizeLimit: "15mb",
+    },
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "cdn.sanity.io" },
