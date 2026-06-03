@@ -11,8 +11,6 @@
 export const FAL_EDIT_MODEL =
   process.env.FAL_EDIT_MODEL?.trim() || "openai/gpt-image-2/edit";
 
-export const FAL_UPSCALE_MODEL = "fal-ai/clarity-upscaler";
-
 export function isGptImageEditModel(model: string) {
   return model.includes("gpt-image");
 }

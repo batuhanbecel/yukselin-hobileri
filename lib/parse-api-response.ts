@@ -28,7 +28,7 @@ export async function parseApiResponse<T extends Record<string, unknown>>(
     const snippet = text.replace(/\s+/g, " ").slice(0, 280);
     const hint =
       res.status === 504 || snippet.toLowerCase().includes("timeout")
-        ? " İşlem çok uzun sürdü (sunucu zaman aşımı). Upscale kapalı tekrar dene veya tek görsel üret."
+        ? " İşlem çok uzun sürdü (sunucu zaman aşımı). Tek görsel üretmeyi dene."
         : res.status === 413
           ? " Dosya çok büyük."
           : "";

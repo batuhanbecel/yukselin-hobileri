@@ -1,30 +1,15 @@
 /**
  * Admin: ham çanta fotoğrafından AI görsel üretir.
  *
- * Akış:
- *   1) Fal edit modeli ile içerik üretimi (varsayılan: openai/gpt-image-2/edit)
- *   2) Clarity Upscaler ile 2x büyütme (kaliteyi artırır)
- *
- * Mode:
- *   - "product"   → still life atmosferik düzenleme
- *   - "lifestyle" → modelin tuttuğu lifestyle pozu
- *
- * Form-data:
- *   - image: File (zorunlu, ilk kez)
- *   - mode: "product" | "lifestyle"
- *   - prompt: string (opsiyonel)
- *   - inputUrl: string (opsiyonel — daha önce upload edilmiş URL)
- *   - skipUpscale: "1" (opsiyonel — hız için upscaler atlanır)
+ * POST — işi kuyruğa alır, requestId döner (uzun üretim Vercel timeout'unu önler)
+ * GET  — ?requestId=... ile durum / sonuç (client polling)
  */
 
 import { NextResponse } from "next/server";
-import {
-  buildEditInput,
-  FAL_EDIT_MODEL,
-  FAL_UPSCALE_MODEL,
-} from "@/lib/fal-config";
-import { fal, isFalConfigured } from "@/lib/fal";
+import { buildEditInput, FAL_EDIT_MODEL } from "@/lib/fal-config";
 import { getFalErrorMessage } from "@/lib/fal-errors";
+import { extractGeneratedImageUrl } from "@/lib/fal-result";
+import { fal, isFalConfigured } from "@/lib/fal";
 
 export const maxDuration = 300;
 export const runtime = "nodejs";
@@ -60,30 +45,108 @@ function buildLifestylePrompt(productName: string, style: string) {
   );
 }
 
-type FalImage = { url: string };
-type FalEditResult = { data?: { images?: FalImage[] } };
-type FalUpscaleResult = { data?: { image?: FalImage } };
+async function resolveInputUrl(
+  file: FormDataEntryValue | null,
+  inputUrlField: FormDataEntryValue | null
+): Promise<{ inputUrl: string } | { error: string; status: number }> {
+  if (typeof inputUrlField === "string" && inputUrlField.startsWith("http")) {
+    return { inputUrl: inputUrlField };
+  }
 
-async function upscaleImage(imageUrl: string): Promise<string | null> {
+  if (file instanceof File) {
+    if (file.size > 12 * 1024 * 1024) {
+      return { error: "Fotoğraf 12 MB'dan büyük.", status: 400 };
+    }
+    try {
+      const inputUrl = await fal.storage.upload(file);
+      return { inputUrl };
+    } catch (err) {
+      console.error("[admin/generate] upload error:", err);
+      return { error: "Fotoğraf Fal'a yüklenemedi.", status: 502 };
+    }
+  }
+
+  return { error: "Fotoğraf veya inputUrl gerekli.", status: 400 };
+}
+
+export async function GET(req: Request) {
+  if (!isFalConfigured) {
+    return NextResponse.json(
+      { error: "FAL_KEY env değişkeni tanımlı değil." },
+      { status: 500 }
+    );
+  }
+
+  const requestId = new URL(req.url).searchParams.get("requestId")?.trim();
+  const model =
+    new URL(req.url).searchParams.get("model")?.trim() || FAL_EDIT_MODEL;
+
+  if (!requestId) {
+    return NextResponse.json({ error: "requestId gerekli." }, { status: 400 });
+  }
+
   try {
-    const result = (await fal.subscribe(FAL_UPSCALE_MODEL, {
-      input: {
-        image_url: imageUrl,
-        upscale_factor: 2,
-        // pure upscale — overlay creativity'i düşük tut, üretim
-        // detayı korunsun, AI ekleme yapmasın
-        creativity: 0.1,
-        resemblance: 1.5,
-        prompt:
-          "high quality, sharp focus, detailed product, photorealistic",
-        num_inference_steps: 18,
-      },
+    const status = await fal.queue.status(model, {
+      requestId,
       logs: false,
-    })) as FalUpscaleResult;
-    return result?.data?.image?.url ?? null;
+    });
+
+    const queueStatus =
+      typeof status === "object" &&
+      status !== null &&
+      "status" in status &&
+      typeof (status as { status: unknown }).status === "string"
+        ? (status as { status: string }).status
+        : "UNKNOWN";
+
+    if (queueStatus === "IN_QUEUE" || queueStatus === "IN_PROGRESS") {
+      return NextResponse.json({
+        status: queueStatus,
+        requestId,
+      });
+    }
+
+    if (queueStatus === "FAILED") {
+      const failMsg =
+        typeof status === "object" &&
+        status !== null &&
+        "error" in status &&
+        typeof (status as { error: unknown }).error === "string"
+          ? (status as { error: string }).error
+          : "Fal kuyruğu işi başarısız tamamladı.";
+      return NextResponse.json({ error: failMsg, status: "FAILED" }, { status: 502 });
+    }
+
+    const result = await fal.queue.result(model, { requestId });
+    const generatedUrl = extractGeneratedImageUrl(result);
+
+    if (!generatedUrl) {
+      console.error(
+        "[admin/generate] result without image URL:",
+        JSON.stringify(result).slice(0, 800)
+      );
+      return NextResponse.json(
+        {
+          error:
+            "Görsel üretildi ama URL okunamadı. Fal yanıt formatı değişmiş olabilir.",
+          status: "COMPLETED",
+        },
+        { status: 502 }
+      );
+    }
+
+    return NextResponse.json({
+      status: "COMPLETED",
+      requestId,
+      generatedUrl,
+      model,
+    });
   } catch (err) {
-    console.error("[admin/generate] upscale failed (graceful fallback):", err);
-    return null;
+    console.error("[admin/generate] poll error:", err);
+    return NextResponse.json(
+      { error: getFalErrorMessage(err) },
+      { status: 500 }
+    );
   }
 }
 
@@ -108,12 +171,6 @@ export async function POST(req: Request) {
   const modeField = formData.get("mode");
   const productNameField = formData.get("productName");
   const styleField = formData.get("style");
-  const skipUpscaleField = formData.get("skipUpscale");
-  // Varsayılan: upscale kapalı (daha hızlı, timeout riski düşük). Açmak için skipUpscale=0
-  const skipUpscale =
-    skipUpscaleField === null || skipUpscaleField === ""
-      ? true
-      : skipUpscaleField !== "0";
   const mode = modeField === "lifestyle" ? "lifestyle" : "product";
 
   const productName =
@@ -128,32 +185,14 @@ export async function POST(req: Request) {
         ? DEFAULT_LIFESTYLE_STYLE
         : DEFAULT_STILLLIFE_STYLE;
 
-  // Önceden yüklenmiş URL varsa onu kullan
-  let inputUrl: string | null = null;
-  if (typeof inputUrlField === "string" && inputUrlField.startsWith("http")) {
-    inputUrl = inputUrlField;
-  } else if (file instanceof File) {
-    if (file.size > 12 * 1024 * 1024) {
-      return NextResponse.json(
-        { error: "Fotoğraf 12 MB'dan büyük." },
-        { status: 400 }
-      );
-    }
-    try {
-      inputUrl = await fal.storage.upload(file);
-    } catch (err) {
-      console.error("[admin/generate] upload error:", err);
-      return NextResponse.json(
-        { error: "Fotoğraf Fal'a yüklenemedi." },
-        { status: 502 }
-      );
-    }
-  } else {
+  const resolved = await resolveInputUrl(file, inputUrlField);
+  if ("error" in resolved) {
     return NextResponse.json(
-      { error: "Fotoğraf veya inputUrl gerekli." },
-      { status: 400 }
+      { error: resolved.error },
+      { status: resolved.status }
     );
   }
+  const { inputUrl } = resolved;
 
   const defaultPrompt =
     mode === "lifestyle"
@@ -165,44 +204,21 @@ export async function POST(req: Request) {
       : defaultPrompt;
 
   try {
-    // 1) Edit modeli ile içerik üret (varsayılan: GPT Image 2)
-    const editResult = (await fal.subscribe(FAL_EDIT_MODEL, {
+    const { request_id: requestId } = await fal.queue.submit(FAL_EDIT_MODEL, {
       input: buildEditInput(FAL_EDIT_MODEL, prompt, inputUrl),
-      logs: false,
-    })) as FalEditResult;
-
-    const editedUrl = editResult?.data?.images?.[0]?.url;
-    if (!editedUrl) {
-      return NextResponse.json(
-        { error: "Görsel üretilemedi (boş yanıt)." },
-        { status: 502 }
-      );
-    }
-
-    // 2) Upscale (graceful — başarısız olursa orijinal döner)
-    let finalUrl = editedUrl;
-    let upscaled = false;
-    if (!skipUpscale) {
-      const upscaledUrl = await upscaleImage(editedUrl);
-      if (upscaledUrl) {
-        finalUrl = upscaledUrl;
-        upscaled = true;
-      }
-    }
+    });
 
     return NextResponse.json({
+      status: "IN_QUEUE",
       mode,
       model: FAL_EDIT_MODEL,
+      requestId,
       inputUrl,
-      generatedUrl: finalUrl,
-      rawUrl: editedUrl,
-      upscaled,
     });
   } catch (err) {
-    console.error("[admin/generate] error:", err);
-    const message = getFalErrorMessage(err);
+    console.error("[admin/generate] submit error:", err);
     return NextResponse.json(
-      { error: `Üretim başarısız: ${message}` },
+      { error: `Üretim başarısız: ${getFalErrorMessage(err)}` },
       { status: 500 }
     );
   }

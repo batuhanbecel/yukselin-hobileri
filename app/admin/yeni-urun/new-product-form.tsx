@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import { submitAndPollGenerate } from "@/lib/admin-generate-poll";
 import { parseApiResponse } from "@/lib/parse-api-response";
 import Image from "next/image";
 import Link from "next/link";
@@ -36,7 +37,7 @@ type GenMode = "product" | "lifestyle";
 type SlotState =
   | { status: "idle" }
   | { status: "generating" }
-  | { status: "ready"; generatedUrl: string; upscaled?: boolean }
+  | { status: "ready"; generatedUrl: string }
   | { status: "error"; message: string };
 
 const SLOT_META: Record<
@@ -126,23 +127,12 @@ export function NewProductForm({ categories }: Props) {
       if (customPrompt.trim()) fd.append("prompt", customPrompt.trim());
 
       try {
-        const res = await fetch("/api/admin/generate", {
-          method: "POST",
-          body: fd,
-        });
-        const parsed = await parseApiResponse<{
-          error?: string;
-          inputUrl?: string;
-          generatedUrl?: string;
-          upscaled?: boolean;
-        }>(res);
-        if (!parsed.ok) throw new Error(parsed.error);
-        const data = parsed.data;
-        if (data.inputUrl && !inputUrl) setInputUrl(data.inputUrl);
+        const { generatedUrl, inputUrl: newInputUrl } =
+          await submitAndPollGenerate(fd);
+        if (newInputUrl && !inputUrl) setInputUrl(newInputUrl);
         setter({
           status: "ready",
-          generatedUrl: data.generatedUrl!,
-          upscaled: Boolean(data.upscaled),
+          generatedUrl,
         });
       } catch (err) {
         const message = err instanceof Error ? err.message : "Bilinmeyen hata.";
@@ -685,27 +675,21 @@ function GenerationSlot({
       <div className="relative flex aspect-[4/5] w-full items-center justify-center overflow-hidden rounded-2xl border border-bordeaux/15 bg-paper">
         {state.status === "ready" ? (
           <>
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src={state.generatedUrl}
               alt={meta.label}
-              width={1600}
-              height={2000}
               className="size-full object-cover"
-              unoptimized
+              onError={() => {
+                console.error("[admin] preview failed:", state.generatedUrl);
+              }}
             />
-            {state.upscaled && (
-              <span className="absolute right-2 top-2 rounded-full bg-ink/80 px-2 py-0.5 text-[9px] font-medium uppercase tracking-wider text-paper backdrop-blur">
-                2x HD
-              </span>
-            )}
           </>
         ) : state.status === "generating" ? (
           <div className="text-center">
             <Loader2 className="mx-auto size-8 animate-spin text-bordeaux" />
             <p className="font-hand mt-3 text-xl text-bordeaux">üretiliyor...</p>
-            <p className="mt-1 text-xs text-ink-soft">
-              ~30 sn (üretim + HD büyütme)
-            </p>
+            <p className="mt-1 text-xs text-ink-soft">~20–40 sn</p>
           </div>
         ) : state.status === "error" ? (
           <div className="px-4 text-center">
