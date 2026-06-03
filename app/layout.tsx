@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Caveat, Fraunces, Inter, Italiana } from "next/font/google";
+import { Caveat, Cormorant_Garamond, Inter, Italiana } from "next/font/google";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
 import { getSiteSettings } from "@/lib/sanity/fetch";
 import "./globals.css";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
   subsets: ["latin", "latin-ext"],
-  weight: "variable",
-  axes: ["SOFT", "opsz"],
+  weight: ["300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
 });
 
 const italiana = Italiana({
@@ -96,7 +96,7 @@ export default async function RootLayout({
   return (
     <html
       lang="tr"
-      className={`${fraunces.variable} ${italiana.variable} ${hand.variable} ${inter.variable} h-full`}
+      className={`${cormorant.variable} ${italiana.variable} ${hand.variable} ${inter.variable} h-full`}
     >
       <head>
         <script

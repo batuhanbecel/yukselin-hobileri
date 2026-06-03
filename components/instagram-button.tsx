@@ -39,7 +39,7 @@ export function InstagramButton({
         ctaButtonBase,
         ctaButtonSizes[size],
         variant === "gradient" &&
-          "bg-gradient-to-r from-bordeaux via-clay to-bordeaux-soft text-paper ring-1 ring-bordeaux/20 hover:from-clay hover:via-bordeaux hover:to-bordeaux hover:ring-bordeaux/35",
+          "bg-ink text-paper hover:bg-bordeaux",
         variant === "outline" && ctaButtonOutline,
         className
       )}
