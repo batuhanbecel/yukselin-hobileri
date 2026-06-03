@@ -7,21 +7,37 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-nunito);
+  --font-sans: var(--font-inter);
   --font-heading: var(--font-fraunces);
+  --font-display: var(--font-italiana);
   --font-hand: var(--font-caveat);
 
-  /* Warm, handmade palette */
-  --color-cream: #faf3e8;
-  --color-cream-deep: #f3e8d4;
-  --color-terracotta: #c4756c;
-  --color-terracotta-soft: #e9b8a8;
-  --color-rose-dust: #d99a8a;
-  --color-sage: #8fa088;
-  --color-sage-soft: #cfd8c4;
-  --color-honey: #d9a96b;
-  --color-cocoa: #4a3528;
-  --color-cocoa-soft: #8a7868;
+  /* Atelier — refined warm palette */
+  --color-ivory: #f7efe1;
+  --color-ivory-deep: #ede0c8;
+  --color-bordeaux: #a8584d;       /* deeper, more grown-up terracotta */
+  --color-bordeaux-soft: #d99c8e;
+  --color-clay: #c4756c;           /* keep original terracotta as accent */
+  --color-clay-soft: #e9b8a8;
+  --color-olive: #6b7c4a;          /* deeper sage → olive */
+  --color-olive-soft: #b8c39d;
+  --color-gold: #c9a96b;           /* warm gold accent */
+  --color-gold-soft: #e6d4a8;
+  --color-ink: #2d1f17;            /* deep chocolate ink */
+  --color-ink-soft: #6b5547;
+  --color-paper: #fdfaf3;
+
+  /* legacy aliases — keep components from breaking */
+  --color-cream: var(--color-ivory);
+  --color-cream-deep: var(--color-ivory-deep);
+  --color-terracotta: var(--color-bordeaux);
+  --color-terracotta-soft: var(--color-clay-soft);
+  --color-rose-dust: var(--color-clay);
+  --color-sage: var(--color-olive);
+  --color-sage-soft: var(--color-olive-soft);
+  --color-honey: var(--color-gold);
+  --color-cocoa: var(--color-ink);
+  --color-cocoa-soft: var(--color-ink-soft);
 
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -62,24 +78,24 @@
 }
 
 :root {
-  --background: #faf3e8;
-  --foreground: #4a3528;
-  --card: #fffaf0;
-  --card-foreground: #4a3528;
-  --popover: #fffaf0;
-  --popover-foreground: #4a3528;
-  --primary: #c4756c;
-  --primary-foreground: #fffaf0;
-  --secondary: #f3e8d4;
-  --secondary-foreground: #6b4f3f;
-  --muted: #efe4d0;
-  --muted-foreground: #8a7868;
-  --accent: #cfd8c4;
-  --accent-foreground: #3f5a3a;
+  --background: #f7efe1;
+  --foreground: #2d1f17;
+  --card: #fdfaf3;
+  --card-foreground: #2d1f17;
+  --popover: #fdfaf3;
+  --popover-foreground: #2d1f17;
+  --primary: #a8584d;
+  --primary-foreground: #fdfaf3;
+  --secondary: #ede0c8;
+  --secondary-foreground: #4a3325;
+  --muted: #e8dcc4;
+  --muted-foreground: #6b5547;
+  --accent: #b8c39d;
+  --accent-foreground: #3a4a25;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: #e8d5c0;
-  --input: #e8d5c0;
-  --ring: #c4756c;
+  --border: #d9c9ac;
+  --input: #d9c9ac;
+  --ring: #a8584d;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -101,42 +117,52 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-cream text-foreground antialiased;
-    background-color: #faf3e8;
+    @apply bg-ivory text-foreground antialiased;
+    background-color: #f7efe1;
     background-image:
-      /* subtle paper noise */
       radial-gradient(
-        circle at 18% 12%,
-        rgba(196, 117, 108, 0.08) 0%,
-        transparent 38%
+        ellipse at 15% 5%,
+        rgba(168, 88, 77, 0.06) 0%,
+        transparent 45%
       ),
       radial-gradient(
-        circle at 82% 88%,
-        rgba(143, 160, 136, 0.1) 0%,
-        transparent 42%
+        ellipse at 85% 95%,
+        rgba(107, 124, 74, 0.08) 0%,
+        transparent 50%
       ),
       radial-gradient(
-        circle at 50% 50%,
-        rgba(217, 169, 107, 0.05) 0%,
+        ellipse at 50% 50%,
+        rgba(201, 169, 107, 0.04) 0%,
         transparent 60%
       );
     background-attachment: fixed;
+    font-feature-settings: "ss01", "ss02", "cv01";
   }
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
   }
   .font-heading {
     font-family: var(--font-fraunces), Georgia, serif;
     font-feature-settings: "ss01", "ss02";
+    font-variation-settings: "SOFT" 50, "opsz" 144;
+  }
+  .font-display {
+    font-family: var(--font-italiana), Georgia, serif;
+    letter-spacing: 0.01em;
   }
   .font-hand {
     font-family: var(--font-caveat), "Comic Sans MS", cursive;
   }
+
+  /* Refined selection */
+  ::selection {
+    background-color: rgba(168, 88, 77, 0.18);
+    color: #2d1f17;
+  }
 }
 
-/* Decorative utilities */
 @layer utilities {
-  /* Dashed "stitch" border — like sewing line */
   .stitch-border {
     background-image: repeating-linear-gradient(
       90deg,
@@ -145,24 +171,54 @@
     );
   }
 
-  /* Polaroid-style card */
   .polaroid {
-    background: #fffaf0;
+    background: #fdfaf3;
     box-shadow:
-      0 1px 2px rgba(74, 53, 40, 0.08),
-      0 8px 24px -8px rgba(74, 53, 40, 0.18);
+      0 1px 2px rgba(45, 31, 23, 0.06),
+      0 8px 24px -8px rgba(45, 31, 23, 0.18);
   }
 
-  /* Tape decoration */
   .tape {
     position: absolute;
-    background: rgba(217, 169, 107, 0.55);
-    box-shadow: 0 2px 4px rgba(74, 53, 40, 0.1);
+    background: rgba(201, 169, 107, 0.55);
+    box-shadow: 0 2px 4px rgba(45, 31, 23, 0.1);
   }
 
-  /* Subtle wobble for handmade feel */
   .wobble-1 { transform: rotate(-1.2deg); }
   .wobble-2 { transform: rotate(0.8deg); }
   .wobble-3 { transform: rotate(-0.6deg); }
   .wobble-4 { transform: rotate(1.4deg); }
+
+  /* Editorial display number */
+  .editorial-number {
+    font-family: var(--font-italiana), serif;
+    -webkit-text-stroke: 1px currentColor;
+    color: transparent;
+  }
+
+  /* Subtle grain texture overlay */
+  .grain {
+    position: relative;
+  }
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0.2 0 0 0 0 0.15 0 0 0 0 0.1 0 0 0 0.4 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.06;
+    mix-blend-mode: multiply;
+  }
+
+  /* Underline draw effect */
+  .link-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .link-underline:hover {
+    background-size: 100% 1px;
+  }
 }

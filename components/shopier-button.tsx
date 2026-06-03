@@ -15,7 +15,7 @@ export function ShopierButton({ url, className, size = "default" }: ShopierButto
       asChild
       size={size}
       className={cn(
-        "rounded-full border-0 bg-sage text-white shadow-sm transition-all hover:bg-sage/90 hover:shadow-md",
+        "rounded-full border-0 bg-olive text-paper shadow-sm transition-all hover:bg-olive/90 hover:shadow-md",
         className
       )}
     >

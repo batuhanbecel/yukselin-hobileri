@@ -14,15 +14,15 @@ export function ProductGrid({
 }: ProductGridProps) {
   if (products.length === 0) {
     return (
-      <div className="rounded-3xl border border-dashed border-terracotta/40 bg-white/60 px-6 py-16 text-center">
-        <p className="font-hand text-2xl text-terracotta">{emptyMessage}</p>
-        <p className="mt-2 text-cocoa-soft">{emptyDescription}</p>
+      <div className="rounded-3xl border border-dashed border-bordeaux/30 bg-paper/60 px-6 py-20 text-center">
+        <p className="font-hand text-2xl text-bordeaux">{emptyMessage}</p>
+        <p className="mt-2 text-ink-soft">{emptyDescription}</p>
       </div>
     );
   }
 
   return (
-    <div className="grid gap-8 sm:grid-cols-2 sm:gap-10 lg:grid-cols-3">
+    <div className="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
       {products.map((product, index) => (
         <ProductCard
           key={product._id}

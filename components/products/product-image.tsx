@@ -12,10 +12,10 @@ type ProductImageProps = {
 };
 
 const PLACEHOLDER_GRADIENTS = [
-  "from-terracotta-soft/50 via-cream-deep to-rose-dust/40",
-  "from-sage-soft/60 via-cream-deep to-sage/30",
-  "from-cream-deep via-honey/30 to-terracotta-soft/40",
-  "from-rose-dust/40 via-cream to-terracotta-soft/50",
+  "from-clay-soft/40 via-ivory-deep to-bordeaux-soft/30",
+  "from-olive-soft/50 via-ivory-deep to-olive/20",
+  "from-ivory-deep via-gold-soft/40 to-clay-soft/30",
+  "from-bordeaux-soft/30 via-ivory to-gold-soft/30",
 ];
 
 function placeholderGradient(title: string) {
@@ -38,7 +38,7 @@ export function ProductImage({
     return (
       <div
         className={cn(
-          "relative flex aspect-[4/5] w-full items-center justify-center overflow-hidden rounded-sm bg-gradient-to-br",
+          "relative flex aspect-[4/5] w-full items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br",
           placeholderGradient(title),
           className
         )}
@@ -72,7 +72,7 @@ export function ProductImage({
   return (
     <div
       className={cn(
-        "relative aspect-[4/5] w-full overflow-hidden rounded-sm bg-muted",
+        "relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-muted",
         className
       )}
     >

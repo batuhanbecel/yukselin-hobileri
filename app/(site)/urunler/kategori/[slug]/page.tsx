@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Breadcrumb } from "@/components/breadcrumb";
+import { Reveal } from "@/components/motion/reveal";
 import { CategoryFilter } from "@/components/products/category-filter";
 import { ProductGrid } from "@/components/products/product-grid";
 import {
@@ -43,7 +44,7 @@ export default async function CategoryPage({ params }: PageProps) {
   if (!cat) notFound();
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
+    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-8 sm:py-20">
       <Breadcrumb
         items={[
           { label: "Ana sayfa", href: "/" },
@@ -51,17 +52,27 @@ export default async function CategoryPage({ params }: PageProps) {
           { label: cat.title },
         ]}
       />
-      <div className="relative mb-10 text-center">
-        {page.pageHandwritten && (
-          <p className="font-hand text-2xl text-terracotta">
-            {page.pageHandwritten}
-          </p>
-        )}
-        <h1 className="font-heading text-5xl text-cocoa sm:text-6xl">
-          {cat.title}
-        </h1>
-        <div className="mx-auto mt-4 h-px w-24 text-terracotta/40 stitch-border" />
-      </div>
+
+      <Reveal>
+        <div className="mb-12 grid items-end gap-6 border-b border-bordeaux/10 pb-10 lg:grid-cols-12">
+          <div className="lg:col-span-7">
+            <div className="flex items-center gap-3">
+              <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-bordeaux">
+                / Kategori
+              </span>
+              <span className="h-px flex-1 bg-bordeaux/20" />
+            </div>
+            {page.pageHandwritten && (
+              <p className="font-hand mt-3 text-2xl text-bordeaux">
+                {page.pageHandwritten}
+              </p>
+            )}
+            <h1 className="font-heading mt-1 text-5xl font-light leading-[1.05] text-ink sm:text-6xl md:text-7xl">
+              {cat.title}
+            </h1>
+          </div>
+        </div>
+      </Reveal>
 
       <CategoryFilter categories={categories} activeSlug={slug} />
 

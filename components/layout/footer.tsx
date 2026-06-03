@@ -28,21 +28,23 @@ export function Footer({
   const igHandle = instagramHandle || "@ykslbcl";
 
   return (
-    <footer className="relative mt-auto border-t border-terracotta-soft/30 bg-cream-deep/40">
-      <div
-        className="absolute left-8 right-8 top-3 h-px text-terracotta/30 stitch-border"
-        aria-hidden
-      />
-
-      <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
-        <div className="flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
-          <div className="max-w-sm">
-            <p className="font-heading text-2xl text-cocoa">{title}</p>
+    <footer className="relative mt-auto border-t border-bordeaux/15 bg-ivory-deep/40">
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-8">
+        <div className="grid gap-12 lg:grid-cols-12">
+          {/* Brand block */}
+          <div className="space-y-5 lg:col-span-5">
+            <div className="flex items-center gap-3">
+              <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-bordeaux">
+                / Atölye
+              </span>
+              <span className="h-px w-12 bg-bordeaux/30" />
+            </div>
+            <p className="font-heading text-3xl text-ink">{title}</p>
             {tagline && (
-              <p className="font-hand mt-1 text-xl text-terracotta">{tagline}</p>
+              <p className="font-hand text-2xl text-bordeaux">{tagline}</p>
             )}
             {description && (
-              <p className="mt-4 text-sm leading-relaxed text-cocoa-soft">
+              <p className="max-w-md text-sm leading-relaxed text-ink-soft">
                 {description}
               </p>
             )}
@@ -50,35 +52,48 @@ export function Footer({
               href={igUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-5 inline-flex items-center gap-2 rounded-full border border-terracotta/30 bg-white/60 px-4 py-2 text-sm font-medium text-terracotta transition-colors hover:bg-terracotta hover:text-white"
+              className="inline-flex items-center gap-2 rounded-full border border-bordeaux/30 bg-paper/60 px-4 py-2 text-sm font-medium text-bordeaux transition-colors hover:bg-bordeaux hover:text-paper"
             >
               <InstagramIcon />
               {igHandle}
             </Link>
           </div>
 
-          <nav className="flex flex-col gap-3">
+          {/* Nav */}
+          <nav className="lg:col-span-3 lg:col-start-7">
             {navTitle && (
-              <p className="font-hand text-lg text-terracotta">{navTitle}</p>
+              <p className="font-hand mb-3 text-lg text-bordeaux">{navTitle}</p>
             )}
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-sm text-cocoa-soft transition-colors hover:text-terracotta"
-              >
-                {link.label}
-              </Link>
-            ))}
+            <ul className="space-y-2">
+              {NAV_LINKS.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="link-underline text-sm text-ink-soft transition-colors hover:text-bordeaux"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </nav>
+
+          {/* Meta */}
+          <div className="lg:col-span-3">
+            <p className="font-hand mb-3 text-lg text-bordeaux">iletişim</p>
+            <ul className="space-y-2 text-sm text-ink-soft">
+              <li>Sipariş için Instagram'dan yazın.</li>
+              <li>Türkiye'nin her yerine kargo.</li>
+            </ul>
+          </div>
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-2 border-t border-dashed border-terracotta/20 pt-6 text-center text-sm text-cocoa-soft sm:flex-row sm:text-left">
+        <div className="mt-16 flex flex-col items-center justify-between gap-3 border-t border-dashed border-bordeaux/20 pt-8 text-center text-sm text-ink-soft sm:flex-row sm:text-left">
           <p>© {year} {title}</p>
           {signature && (
             <p className="font-hand inline-flex items-center gap-2 text-base">
               {signature}
-              <Heart className="size-4 fill-terracotta text-terracotta" />
+              <Heart className="size-4 fill-bordeaux text-bordeaux" />
             </p>
           )}
         </div>

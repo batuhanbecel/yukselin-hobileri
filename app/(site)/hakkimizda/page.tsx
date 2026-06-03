@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { PortableText } from "@portabletext/react";
+import { Breadcrumb } from "@/components/breadcrumb";
 import { InstagramButton } from "@/components/instagram-button";
+import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { getAboutPage } from "@/lib/sanity/fetch";
 
 export const metadata: Metadata = {
@@ -15,94 +17,124 @@ export default async function AboutPage() {
   const story = about.story ?? [];
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
-      <div className="text-center">
-        {about.pageHandwritten && (
-          <p className="font-hand text-2xl text-terracotta">
-            {about.pageHandwritten}
-          </p>
-        )}
-        {about.pageTitle && (
-          <h1 className="font-heading text-5xl text-cocoa sm:text-6xl">
-            {about.pageTitle}
-          </h1>
-        )}
-        <div className="mx-auto mt-4 h-px w-24 text-terracotta/40 stitch-border" />
-      </div>
+    <div className="mx-auto max-w-5xl px-4 py-12 sm:px-8 sm:py-20">
+      <Breadcrumb
+        items={[
+          { label: "Ana sayfa", href: "/" },
+          { label: about.pageTitle || "Hakkımda" },
+        ]}
+      />
+
+      <Reveal>
+        <div className="mb-16 grid items-end gap-6 border-b border-bordeaux/10 pb-12 lg:grid-cols-12">
+          <div className="lg:col-span-7">
+            <div className="flex items-center gap-3">
+              <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-bordeaux">
+                / Hikaye
+              </span>
+              <span className="h-px flex-1 bg-bordeaux/20" />
+            </div>
+            {about.pageHandwritten && (
+              <p className="font-hand mt-3 text-2xl text-bordeaux">
+                {about.pageHandwritten}
+              </p>
+            )}
+            {about.pageTitle && (
+              <h1 className="font-heading mt-1 text-5xl font-light leading-[1.05] text-ink sm:text-6xl md:text-7xl">
+                {about.pageTitle}
+              </h1>
+            )}
+          </div>
+        </div>
+      </Reveal>
 
       {story.length > 0 && (
-        <div className="relative my-12 overflow-hidden rounded-[2rem] border border-terracotta-soft/40 bg-gradient-to-br from-cream-deep/60 to-cream p-8 sm:p-12">
-          <svg
-            className="pointer-events-none absolute -right-6 -top-6 size-32 text-terracotta-soft/40"
-            viewBox="0 0 100 100"
-            fill="none"
-            aria-hidden
-          >
-            <circle cx="50" cy="50" r="36" fill="currentColor" />
-            <path
-              d="M14 50 Q 50 14, 86 50 M 14 50 Q 50 86, 86 50 M 30 18 Q 50 50, 70 82 M 30 82 Q 50 50, 70 18"
-              stroke="#c4756c"
-              strokeOpacity="0.4"
-              strokeWidth="1.5"
-            />
-          </svg>
-
-          <div className="relative space-y-5 text-base leading-relaxed text-cocoa sm:text-lg">
-            <PortableText
-              value={story}
-              components={{
-                block: {
-                  normal: ({ children }) => (
-                    <p className="leading-relaxed text-cocoa/90">{children}</p>
-                  ),
-                },
-              }}
-            />
+        <Reveal delay={0.15}>
+          <div className="grid gap-10 lg:grid-cols-12">
+            <div className="lg:col-span-2">
+              <p className="font-display text-7xl text-bordeaux/30 sm:text-8xl">
+                Y
+              </p>
+            </div>
+            <div className="relative lg:col-span-10">
+              <div className="space-y-6 font-heading text-lg leading-relaxed text-ink/90 sm:text-xl">
+                <PortableText
+                  value={story}
+                  components={{
+                    block: {
+                      normal: ({ children }) => (
+                        <p className="leading-relaxed">{children}</p>
+                      ),
+                    },
+                  }}
+                />
+              </div>
+              {about.storySignature && (
+                <p className="font-hand mt-10 text-2xl text-bordeaux">
+                  {about.storySignature}
+                </p>
+              )}
+            </div>
           </div>
-
-          {about.storySignature && (
-            <p className="font-hand mt-8 text-right text-2xl text-terracotta">
-              {about.storySignature}
-            </p>
-          )}
-        </div>
+        </Reveal>
       )}
 
       {values.length > 0 && (
-        <div className="my-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {values.map((v, i) => (
-            <div
-              key={v._key ?? i}
-              className="rounded-2xl border border-sage-soft/60 bg-white/60 p-5 text-center"
-            >
-              <p className="font-hand text-xl text-terracotta">{v.title}</p>
-              <p className="mt-1 text-sm text-cocoa-soft">{v.text}</p>
+        <section className="mt-24">
+          <Reveal className="mb-10">
+            <div className="flex items-center gap-3">
+              <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-olive">
+                / Değerler
+              </span>
+              <span className="h-px flex-1 bg-olive/20" />
             </div>
-          ))}
-        </div>
+          </Reveal>
+          <Stagger
+            className="grid gap-px overflow-hidden rounded-2xl border border-bordeaux/15 bg-bordeaux/15 sm:grid-cols-2 lg:grid-cols-4"
+            staggerChildren={0.1}
+          >
+            {values.map((v, i) => (
+              <StaggerItem key={v._key ?? i}>
+                <div className="h-full bg-ivory p-6 text-left transition-colors hover:bg-paper">
+                  <p className="font-display text-3xl text-bordeaux/40">
+                    {String(i + 1).padStart(2, "0")}
+                  </p>
+                  <p className="mt-3 font-heading text-xl text-ink">
+                    {v.title}
+                  </p>
+                  <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+                    {v.text}
+                  </p>
+                </div>
+              </StaggerItem>
+            ))}
+          </Stagger>
+        </section>
       )}
 
       {(about.ctaHandwritten || about.ctaTitle || about.ctaText) && (
-        <div className="mt-12 rounded-[2rem] border border-terracotta-soft/40 bg-gradient-to-br from-rose-dust/20 via-cream to-honey/20 px-6 py-10 text-center">
-          {about.ctaHandwritten && (
-            <p className="font-hand text-2xl text-terracotta">
-              {about.ctaHandwritten}
-            </p>
-          )}
-          {about.ctaTitle && (
-            <p className="font-heading mt-1 text-2xl text-cocoa">
-              {about.ctaTitle}
-            </p>
-          )}
-          {about.ctaText && (
-            <p className="mx-auto mt-3 max-w-md text-cocoa-soft">
-              {about.ctaText}
-            </p>
-          )}
-          <div className="mt-6 flex justify-center">
-            <InstagramButton size="lg" />
+        <Reveal>
+          <div className="mt-24 grid items-center gap-10 rounded-[2rem] border border-bordeaux/15 bg-gradient-to-br from-clay-soft/20 via-ivory to-gold-soft/30 p-10 lg:grid-cols-12 lg:p-16">
+            <div className="lg:col-span-7">
+              {about.ctaHandwritten && (
+                <p className="font-hand text-2xl text-bordeaux">
+                  {about.ctaHandwritten}
+                </p>
+              )}
+              {about.ctaTitle && (
+                <p className="font-heading mt-2 text-3xl font-light leading-tight text-ink sm:text-4xl">
+                  {about.ctaTitle}
+                </p>
+              )}
+              {about.ctaText && (
+                <p className="mt-4 max-w-md text-ink-soft">{about.ctaText}</p>
+              )}
+            </div>
+            <div className="lg:col-span-5 lg:text-right">
+              <InstagramButton size="lg" />
+            </div>
           </div>
-        </div>
+        </Reveal>
       )}
     </div>
   );

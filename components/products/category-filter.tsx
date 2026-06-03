@@ -16,7 +16,7 @@ export function CategoryFilter({ categories, activeSlug }: CategoryFilterProps) 
   ];
 
   return (
-    <div className="mb-10 flex flex-wrap items-center justify-center gap-2">
+    <div className="mb-12 flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-bordeaux/10 pb-6">
       {items.map((cat) => {
         const slug = cat.slug.current;
         const href = slug ? `/urunler/kategori/${slug}` : "/urunler";
@@ -26,13 +26,16 @@ export function CategoryFilter({ categories, activeSlug }: CategoryFilterProps) 
             key={cat._id}
             href={href}
             className={cn(
-              "rounded-full border px-4 py-1.5 text-sm font-medium transition-colors",
+              "relative py-1 text-xs font-medium uppercase tracking-[0.22em] transition-colors",
               isActive
-                ? "border-terracotta bg-terracotta text-white shadow-sm"
-                : "border-terracotta/30 bg-white/70 text-cocoa hover:border-terracotta/50 hover:bg-terracotta-soft/30"
+                ? "text-bordeaux"
+                : "text-ink-soft hover:text-ink"
             )}
           >
             {cat.title}
+            {isActive && (
+              <span className="absolute -bottom-[7px] left-0 right-0 h-px bg-bordeaux" />
+            )}
           </Link>
         );
       })}

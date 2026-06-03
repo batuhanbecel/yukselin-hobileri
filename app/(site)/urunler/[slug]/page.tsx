@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Gift } from "lucide-react";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { InstagramButton } from "@/components/instagram-button";
+import { Reveal } from "@/components/motion/reveal";
 import { ProductGallery } from "@/components/products/product-gallery";
 import { RelatedProducts } from "@/components/products/related-products";
 import { StatusBadge } from "@/components/products/status-badge";
@@ -97,7 +98,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
+    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-8 sm:py-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -122,163 +123,162 @@ export default async function ProductDetailPage({ params }: PageProps) {
       <Button
         asChild
         variant="ghost"
-        className="mb-6 -ml-2 text-cocoa-soft hover:text-terracotta"
+        className="mb-8 -ml-2 text-ink-soft hover:text-bordeaux"
       >
         <Link href="/urunler">← Tüm çantalar</Link>
       </Button>
 
-      <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
-        <div className="relative">
+      <div className="grid gap-12 lg:grid-cols-12 lg:gap-20">
+        <Reveal className="lg:col-span-7">
           <ProductGallery images={product.images} title={product.title} />
-        </div>
+        </Reveal>
 
-        <div className="flex flex-col justify-center space-y-6">
-          <div className="flex flex-wrap items-center gap-3">
-            {product.category?.title && (
-              <Link
-                href={`/urunler/kategori/${product.category.slug.current}`}
-                className="rounded-full border border-terracotta/30 bg-white/60 px-3 py-1 text-xs font-medium text-cocoa hover:bg-terracotta-soft/30"
-              >
-                {product.category.title}
-              </Link>
-            )}
-            <StatusBadge status={product.status} />
-            {!isSold && sale.onSale && saleBadge && (
-              <span className="rounded-full bg-terracotta px-3 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-sm">
-                {saleBadge}
-              </span>
-            )}
-            {product.giftReady && !isSold && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-honey/40 bg-honey/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#8a5a1f]">
-                <Gift className="size-3" />
-                Hediye paketli
-              </span>
-            )}
-            {product.featured && !sale.onSale && !isSold && (
-              <p className="font-hand text-xl text-terracotta">özel parça</p>
-            )}
-          </div>
-
-          <div>
-            <h1 className="font-heading text-4xl leading-tight text-cocoa sm:text-5xl">
-              {product.title}
-            </h1>
-            {sale.onSale ? (
-              <div className="mt-4 flex flex-wrap items-baseline gap-3">
-                <span className="text-2xl text-cocoa-soft line-through">
-                  {formatPrice(sale.originalPrice!)}
-                </span>
-                <span className="font-hand text-5xl text-terracotta">
-                  {formatPrice(sale.effectivePrice)}
-                </span>
-              </div>
-            ) : (
-              <div className="mt-4 inline-flex items-baseline gap-2">
-                <span className="font-hand text-4xl text-terracotta">
-                  {formatPrice(sale.effectivePrice)}
-                </span>
-              </div>
-            )}
-          </div>
-
-          {product.description && (
-            <p className="text-lg leading-relaxed text-cocoa-soft">
-              {product.description}
-            </p>
-          )}
-
-          {/* Details grid */}
-          {(product.dimensions || product.material || product.care) && (
-            <dl className="grid grid-cols-2 gap-3 rounded-2xl border border-terracotta-soft/30 bg-white/60 p-4 text-sm">
-              {product.dimensions && (
-                <div>
-                  <dt className="font-hand text-base text-terracotta">Boyut</dt>
-                  <dd className="text-cocoa">{product.dimensions}</dd>
-                </div>
+        <Reveal delay={0.15} className="lg:col-span-5">
+          <div className="flex flex-col space-y-7 lg:sticky lg:top-28">
+            <div className="flex flex-wrap items-center gap-2">
+              {product.category?.title && (
+                <Link
+                  href={`/urunler/kategori/${product.category.slug.current}`}
+                  className="text-[10px] font-medium uppercase tracking-[0.32em] text-bordeaux hover:text-ink"
+                >
+                  / {product.category.title}
+                </Link>
               )}
-              {product.material && (
-                <div>
-                  <dt className="font-hand text-base text-terracotta">Malzeme</dt>
-                  <dd className="text-cocoa">{product.material}</dd>
-                </div>
+              <StatusBadge status={product.status} />
+              {!isSold && sale.onSale && saleBadge && (
+                <span className="rounded-full bg-bordeaux px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-paper shadow-sm">
+                  {saleBadge}
+                </span>
               )}
-              {product.care && (
-                <div className="col-span-2">
-                  <dt className="font-hand text-base text-terracotta">Bakım</dt>
-                  <dd className="text-cocoa">{product.care}</dd>
-                </div>
+              {product.giftReady && !isSold && (
+                <span className="inline-flex items-center gap-1 rounded-full border border-gold/40 bg-gold/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-[#8a6d2f]">
+                  <Gift className="size-3" />
+                  Hediye paketli
+                </span>
               )}
-            </dl>
-          )}
+            </div>
 
-          {/* Colors */}
-          {product.colors && product.colors.length > 0 && (
             <div>
-              <p className="font-hand mb-2 text-base text-terracotta">
-                Renk seçenekleri
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {product.colors.map((c, i) => (
-                  <span
-                    key={c._key ?? i}
-                    className="inline-flex items-center gap-2 rounded-full border border-cocoa-soft/30 bg-white/70 px-3 py-1 text-sm text-cocoa"
-                  >
-                    {c.hex && (
-                      <span
-                        className="inline-block size-4 rounded-full border border-cocoa-soft/30"
-                        style={{
-                          backgroundColor: c.hex.startsWith("#") ? c.hex : `#${c.hex}`,
-                        }}
-                        aria-hidden
-                      />
-                    )}
-                    {c.name}
+              <h1 className="font-heading text-4xl font-light leading-[1.05] text-ink sm:text-5xl">
+                {product.title}
+              </h1>
+              <div className="mt-6 flex items-baseline gap-3 border-y border-bordeaux/15 py-4">
+                {sale.onSale && (
+                  <span className="text-xl text-ink-soft line-through">
+                    {formatPrice(sale.originalPrice!)}
                   </span>
-                ))}
+                )}
+                <span className="font-heading text-3xl text-bordeaux sm:text-4xl">
+                  {formatPrice(sale.effectivePrice)}
+                </span>
               </div>
             </div>
-          )}
 
-          {(settings.detailNoteHandwritten || settings.detailNoteText) && (
-            <div className="rounded-3xl border border-dashed border-terracotta/40 bg-white/60 p-6">
-              {settings.detailNoteHandwritten && (
-                <p className="font-hand text-xl text-terracotta">
-                  {settings.detailNoteHandwritten}
-                </p>
-              )}
-              {settings.detailNoteText && (
-                <p className="mt-1 text-sm leading-relaxed text-cocoa-soft">
-                  {settings.detailNoteText}
-                </p>
-              )}
-            </div>
-          )}
+            {product.description && (
+              <p className="text-base leading-relaxed text-ink-soft">
+                {product.description}
+              </p>
+            )}
 
-          {!isSold && (
-            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <InstagramButton
-                productTitle={product.title}
-                size="lg"
-                className="w-full sm:w-auto"
-              />
-              {settings.whatsappNumber && (
-                <WhatsappButton
-                  phone={settings.whatsappNumber}
+            {(product.dimensions || product.material || product.care) && (
+              <dl className="space-y-3 text-sm">
+                {product.dimensions && (
+                  <div className="flex items-baseline justify-between gap-4 border-b border-bordeaux/10 pb-2">
+                    <dt className="text-[11px] font-medium uppercase tracking-[0.22em] text-ink-soft">
+                      Boyut
+                    </dt>
+                    <dd className="text-ink">{product.dimensions}</dd>
+                  </div>
+                )}
+                {product.material && (
+                  <div className="flex items-baseline justify-between gap-4 border-b border-bordeaux/10 pb-2">
+                    <dt className="text-[11px] font-medium uppercase tracking-[0.22em] text-ink-soft">
+                      Malzeme
+                    </dt>
+                    <dd className="text-ink">{product.material}</dd>
+                  </div>
+                )}
+                {product.care && (
+                  <div className="flex items-baseline justify-between gap-4 border-b border-bordeaux/10 pb-2">
+                    <dt className="text-[11px] font-medium uppercase tracking-[0.22em] text-ink-soft">
+                      Bakım
+                    </dt>
+                    <dd className="text-right text-ink">{product.care}</dd>
+                  </div>
+                )}
+              </dl>
+            )}
+
+            {product.colors && product.colors.length > 0 && (
+              <div>
+                <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.22em] text-ink-soft">
+                  Renk seçenekleri
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {product.colors.map((c, i) => (
+                    <span
+                      key={c._key ?? i}
+                      className="inline-flex items-center gap-2 rounded-full border border-bordeaux/20 bg-paper px-3 py-1 text-sm text-ink"
+                    >
+                      {c.hex && (
+                        <span
+                          className="inline-block size-4 rounded-full border border-ink/15"
+                          style={{
+                            backgroundColor: c.hex.startsWith("#")
+                              ? c.hex
+                              : `#${c.hex}`,
+                          }}
+                          aria-hidden
+                        />
+                      )}
+                      {c.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {(settings.detailNoteHandwritten || settings.detailNoteText) && (
+              <div className="border-l-2 border-bordeaux/40 pl-4">
+                {settings.detailNoteHandwritten && (
+                  <p className="font-hand text-lg text-bordeaux">
+                    {settings.detailNoteHandwritten}
+                  </p>
+                )}
+                {settings.detailNoteText && (
+                  <p className="mt-1 text-sm leading-relaxed text-ink-soft">
+                    {settings.detailNoteText}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {!isSold && (
+              <div className="flex flex-col gap-3 pt-2">
+                <InstagramButton
                   productTitle={product.title}
                   size="lg"
-                  className="w-full sm:w-auto"
+                  className="w-full"
                 />
-              )}
-              {shopierUrl && (
-                <ShopierButton
-                  url={shopierUrl}
-                  size="lg"
-                  className="w-full sm:w-auto"
-                />
-              )}
-            </div>
-          )}
-        </div>
+                {settings.whatsappNumber && (
+                  <WhatsappButton
+                    phone={settings.whatsappNumber}
+                    productTitle={product.title}
+                    size="lg"
+                    className="w-full"
+                  />
+                )}
+                {shopierUrl && (
+                  <ShopierButton
+                    url={shopierUrl}
+                    size="lg"
+                    className="w-full"
+                  />
+                )}
+              </div>
+            )}
+          </div>
+        </Reveal>
       </div>
 
       <RelatedProducts products={related} />

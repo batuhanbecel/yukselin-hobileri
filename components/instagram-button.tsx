@@ -28,9 +28,9 @@ export function InstagramButton({
       size={size}
       className={cn(
         variant === "gradient" &&
-          "rounded-full border-0 bg-terracotta text-white shadow-sm transition-all hover:bg-terracotta/90 hover:shadow-md",
+          "rounded-full border-0 bg-ink text-paper shadow-sm transition-all hover:bg-bordeaux hover:shadow-md",
         variant === "outline" &&
-          "rounded-full border-terracotta/30 bg-white/70 text-cocoa hover:bg-terracotta-soft/30",
+          "rounded-full border-bordeaux/30 bg-paper/70 text-ink hover:bg-bordeaux-soft/30",
         className
       )}
       variant={variant === "outline" ? "outline" : "default"}

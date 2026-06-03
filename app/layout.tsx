@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Fraunces, Caveat, Nunito } from "next/font/google";
+import { Fraunces, Caveat, Inter, Italiana } from "next/font/google";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
 import "./globals.css";
 
@@ -11,16 +11,22 @@ const fraunces = Fraunces({
   axes: ["SOFT", "opsz"],
 });
 
+const italiana = Italiana({
+  variable: "--font-italiana",
+  subsets: ["latin"],
+  weight: "400",
+});
+
 const caveat = Caveat({
   variable: "--font-caveat",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
 
-const nunito = Nunito({
-  variable: "--font-nunito",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -45,10 +51,7 @@ export const metadata: Metadata = {
     title: SITE_NAME,
     description: "Annemin sevgiyle ördüğü el emeği çantalar.",
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
+  robots: { index: true, follow: true },
 };
 
 const plausibleDomain = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN;
@@ -72,7 +75,7 @@ export default function RootLayout({
   return (
     <html
       lang="tr"
-      className={`${fraunces.variable} ${caveat.variable} ${nunito.variable} h-full`}
+      className={`${fraunces.variable} ${italiana.variable} ${caveat.variable} ${inter.variable} h-full`}
     >
       <head>
         <script
