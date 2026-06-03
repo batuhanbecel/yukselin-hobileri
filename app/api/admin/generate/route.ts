@@ -45,10 +45,14 @@ function buildLifestylePrompt(productName: string, style: string) {
     `fotoğraf oluştur. Ürünün kendisine kesinlikle dokunma; form, renk, ` +
     `doku, desen, materyal, ölçü hissi ve tüm detaylar birebir korunsun. ` +
     `Ürün bir model üzerinde doğal şekilde sergilensin. Model ürünü omzunda, ` +
-    `elinde veya üzerinde taşısın ya da kullansın. ${style} bir atmosfer ` +
-    `kur. Arka plan, ışık, styling ve model kombinasyonu ürüne uygun olsun. ` +
-    `Ürün net şekilde görünsün ve ana odak olarak kalsın. Sonuç gerçekçi, ` +
-    `estetik ve marka çekimi kalitesinde olsun. En-boy oranı 3:4.`
+    `elinde veya üzerinde taşısın ya da kullansın. ` +
+    `ÖNEMLİ: Modelin yüzü kadrajda olmasın. Çerçeve boyun altından başlasın ` +
+    `veya yalnızca el, omuz, bel ya da silüet görünsün; yüz, gözler ve baş ` +
+    `kesinlikle kadraj dışında kalsın. ` +
+    `${style} bir atmosfer kur. Arka plan, ışık, styling ve model ` +
+    `kombinasyonu ürüne uygun olsun. Ürün net şekilde görünsün ve ana ` +
+    `odak olarak kalsın. Sonuç gerçekçi, estetik ve marka çekimi ` +
+    `kalitesinde olsun. En-boy oranı 3:4.`
   );
 }
 
