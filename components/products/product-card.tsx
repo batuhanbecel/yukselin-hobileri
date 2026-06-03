@@ -129,7 +129,7 @@ export function ProductCard({
       </Link>
 
       {!isSold && (
-        <div className="mt-4 flex flex-col gap-2">
+        <div className="mt-4 flex flex-col gap-2.5">
           <InstagramButton
             productTitle={product.title}
             size="sm"

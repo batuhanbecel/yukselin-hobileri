@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ShoppingBag } from "lucide-react";
+import { ctaButtonBase, ctaButtonSizes } from "@/components/cta-button-styles";
 import { Button } from "@/components/ui/button";
 import { useSiteSettings } from "@/lib/site-context";
 import { cn } from "@/lib/utils";
@@ -21,13 +22,18 @@ export function ShopierButton({ url, className, size = "default" }: ShopierButto
       asChild
       size={size}
       className={cn(
-        "rounded-full border-0 bg-olive text-paper shadow-sm transition-all hover:bg-olive/90 hover:shadow-md",
+        ctaButtonBase,
+        ctaButtonSizes[size],
+        "bg-gradient-to-r from-olive to-olive/85 text-paper ring-1 ring-olive/20 hover:from-olive/95 hover:to-olive/75 hover:ring-olive/35",
         className
       )}
     >
       <Link href={url} target="_blank" rel="noopener noreferrer">
-        <ShoppingBag className="size-4 shrink-0" />
-        {label}
+        <ShoppingBag
+          className={cn("shrink-0", size === "lg" ? "size-5" : "size-4")}
+          strokeWidth={2.25}
+        />
+        <span>{label}</span>
       </Link>
     </Button>
   );

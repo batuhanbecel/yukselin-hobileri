@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Fraunces, Inter, Italiana, Patrick_Hand } from "next/font/google";
+import { Caveat, Fraunces, Inter, Italiana } from "next/font/google";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
 import { getSiteSettings } from "@/lib/sanity/fetch";
 import "./globals.css";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   weight: "variable",
   axes: ["SOFT", "opsz"],
 });
@@ -18,15 +18,15 @@ const italiana = Italiana({
   weight: "400",
 });
 
-const hand = Patrick_Hand({
-  variable: "--font-patrick-hand",
-  subsets: ["latin", "latin-ext"],
-  weight: "400",
+const hand = Caveat({
+  variable: "--font-caveat",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
 });
 
 const inter = Inter({
   variable: "--font-inter",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   weight: ["300", "400", "500", "600", "700"],
 });
 
