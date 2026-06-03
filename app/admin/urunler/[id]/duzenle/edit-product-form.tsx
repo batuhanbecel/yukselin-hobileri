@@ -341,7 +341,18 @@ export function EditProductForm({ id, categories }: Props) {
 
           <div className="space-y-5">
             <div className="grid grid-cols-2 gap-4">
-              <Field label="Kategori">
+              <Field
+                label="Kategori"
+                hint={
+                  <Link
+                    href="/admin/kategoriler"
+                    target="_blank"
+                    className="text-bordeaux hover:underline"
+                  >
+                    Kategorileri yönet ↗
+                  </Link>
+                }
+              >
                 <select
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}

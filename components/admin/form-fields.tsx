@@ -21,7 +21,7 @@ export function Field({
   label: string;
   children: React.ReactNode;
   required?: boolean;
-  hint?: string;
+  hint?: React.ReactNode;
 }) {
   return (
     <label className="block">

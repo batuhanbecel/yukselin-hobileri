@@ -121,6 +121,7 @@ export function NewProductForm({ categories }: Props) {
       } else if (file) {
         fd.append("image", file);
       }
+      if (title.trim()) fd.append("productName", title.trim());
       if (customPrompt.trim()) fd.append("prompt", customPrompt.trim());
 
       try {
@@ -141,7 +142,7 @@ export function NewProductForm({ categories }: Props) {
         setter({ status: "error", message });
       }
     },
-    [file, inputUrl, customPrompt]
+    [file, inputUrl, customPrompt, title]
   );
 
   const generateBoth = useCallback(async () => {
@@ -459,7 +460,18 @@ export function NewProductForm({ categories }: Props) {
           {/* SAĞ */}
           <div className="space-y-5">
             <div className="grid grid-cols-2 gap-4">
-              <Field label="Kategori">
+              <Field
+                label="Kategori"
+                hint={
+                  <Link
+                    href="/admin/kategoriler"
+                    target="_blank"
+                    className="text-bordeaux hover:underline"
+                  >
+                    Kategorileri yönet ↗
+                  </Link>
+                }
+              >
                 <select
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}

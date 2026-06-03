@@ -26,10 +26,16 @@ export default function AdminHomePage() {
           description="Mevcut ürünleri düzenle, sırala, sil."
         />
         <AdminCard
-          href="/studio"
+          href="/admin/kategoriler"
           step="03"
+          title="Kategoriler"
+          description="Koleksiyon türlerini (çanta, kazak...) yönet."
+        />
+        <AdminCard
+          href="/studio"
+          step="04"
           title="Sanity Studio"
-          description="Sayfa metinleri, kategoriler, ayarlar."
+          description="Sayfa metinleri, ayarlar, ileri düzenleme."
         />
       </div>
     </div>

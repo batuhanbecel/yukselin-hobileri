@@ -1,0 +1,354 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { motion } from "motion/react";
+import { Check, Loader2, Pencil, Plus, RefreshCw, Trash2, X } from "lucide-react";
+import { Field, inputCls } from "@/components/admin/form-fields";
+import { Button } from "@/components/ui/button";
+import { slugify } from "@/lib/slugify";
+
+type CategoryRow = {
+  _id: string;
+  title: string;
+  slug?: string;
+  order?: number;
+  productCount: number;
+};
+
+export function CategoriesManager() {
+  const [items, setItems] = useState<CategoryRow[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  // Yeni kategori formu
+  const [newTitle, setNewTitle] = useState("");
+  const [newOrder, setNewOrder] = useState("");
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
+
+  // Düzenleme state
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editOrder, setEditOrder] = useState("");
+
+  const load = async () => {
+    try {
+      const res = await fetch("/api/admin/categories");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Yüklenemedi.");
+      setItems(data.categories as CategoryRow[]);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Bilinmeyen hata.");
+    }
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const handleCreate = async () => {
+    if (!newTitle.trim()) return;
+    setCreating(true);
+    setCreateError(null);
+    try {
+      const res = await fetch("/api/admin/categories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: newTitle.trim(),
+          order: newOrder ? Number(newOrder) : 0,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Eklenemedi.");
+      setNewTitle("");
+      setNewOrder("");
+      await load();
+    } catch (err) {
+      setCreateError(err instanceof Error ? err.message : "Bilinmeyen hata.");
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const startEdit = (cat: CategoryRow) => {
+    setEditingId(cat._id);
+    setEditTitle(cat.title);
+    setEditOrder(cat.order?.toString() || "0");
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditTitle("");
+    setEditOrder("");
+  };
+
+  const handleUpdate = async (id: string) => {
+    if (!editTitle.trim()) return;
+    setBusyId(id);
+    try {
+      const res = await fetch(`/api/admin/categories/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: editTitle.trim(),
+          order: editOrder ? Number(editOrder) : 0,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Güncellenemedi.");
+      cancelEdit();
+      await load();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Bilinmeyen hata.");
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const handleDelete = async (cat: CategoryRow) => {
+    if (cat.productCount > 0) {
+      alert(
+        `"${cat.title}" kategorisi ${cat.productCount} üründe kullanılıyor. Önce o ürünlerin kategorisini değiştir.`
+      );
+      return;
+    }
+    if (!confirm(`"${cat.title}" kategorisini silmek istediğinden emin misin?`)) {
+      return;
+    }
+    setBusyId(cat._id);
+    try {
+      const res = await fetch(`/api/admin/categories/${cat._id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Silinemedi.");
+      await load();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Bilinmeyen hata.");
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  return (
+    <div className="mx-auto max-w-4xl px-6 py-12">
+      <div className="mb-10">
+        <p className="font-hand text-2xl text-bordeaux">koleksiyon türleri</p>
+        <h1 className="font-heading text-4xl text-ink sm:text-5xl">
+          Kategoriler
+        </h1>
+        <p className="mt-3 max-w-xl text-ink-soft">
+          Çanta, kazak, hırka gibi koleksiyon türlerini yönet. Ürünler bunlara
+          referansla bağlanır.
+        </p>
+      </div>
+
+      {/* Yeni ekle */}
+      <section className="mb-12 rounded-2xl border border-bordeaux/15 bg-paper p-6">
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-bordeaux">
+            / Yeni
+          </span>
+          <span className="h-px flex-1 bg-bordeaux/20" />
+        </div>
+
+        <div className="mt-5 grid gap-4 sm:grid-cols-[1fr_120px_auto]">
+          <Field label="Kategori adı" required>
+            <input
+              value={newTitle}
+              onChange={(e) => setNewTitle(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && newTitle.trim()) handleCreate();
+              }}
+              placeholder="Hırka"
+              className={inputCls}
+            />
+            {newTitle.trim() && (
+              <span className="mt-1 block text-xs text-ink-soft">
+                URL: {slugify(newTitle)}
+              </span>
+            )}
+          </Field>
+          <Field label="Sıra">
+            <input
+              type="number"
+              inputMode="numeric"
+              value={newOrder}
+              onChange={(e) => setNewOrder(e.target.value)}
+              placeholder="0"
+              className={inputCls}
+            />
+          </Field>
+          <div className="flex items-end">
+            <Button
+              onClick={handleCreate}
+              disabled={!newTitle.trim() || creating}
+              className="w-full rounded-full bg-ink text-paper hover:bg-bordeaux disabled:opacity-60"
+            >
+              {creating ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Plus className="size-4" />
+              )}
+              Ekle
+            </Button>
+          </div>
+        </div>
+
+        {createError && (
+          <div className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-800">
+            {createError}
+          </div>
+        )}
+      </section>
+
+      {/* Mevcut kategoriler */}
+      <div className="flex items-center justify-between gap-3 mb-4">
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-bordeaux">
+            / Mevcut
+          </span>
+          <span className="h-px w-24 bg-bordeaux/20" />
+        </div>
+        <button
+          onClick={load}
+          className="inline-flex items-center gap-1.5 text-xs text-ink-soft hover:text-bordeaux"
+        >
+          <RefreshCw className="size-3" /> Yenile
+        </button>
+      </div>
+
+      {error && (
+        <div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+          {error}
+        </div>
+      )}
+
+      {items === null && !error ? (
+        <div className="flex items-center justify-center py-16">
+          <Loader2 className="size-6 animate-spin text-bordeaux" />
+        </div>
+      ) : items && items.length === 0 ? (
+        <p className="text-center text-ink-soft py-12">Henüz kategori yok.</p>
+      ) : items ? (
+        <motion.ul
+          className="space-y-2"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: {},
+            visible: { transition: { staggerChildren: 0.04 } },
+          }}
+        >
+          {items.map((cat) => {
+            const isEditing = editingId === cat._id;
+            const isBusy = busyId === cat._id;
+            return (
+              <motion.li
+                key={cat._id}
+                variants={{
+                  hidden: { opacity: 0, y: 8 },
+                  visible: { opacity: 1, y: 0 },
+                }}
+                className="rounded-xl border border-bordeaux/15 bg-paper p-4"
+              >
+                {isEditing ? (
+                  <div className="grid gap-3 sm:grid-cols-[1fr_120px_auto]">
+                    <input
+                      value={editTitle}
+                      onChange={(e) => setEditTitle(e.target.value)}
+                      className={inputCls}
+                      autoFocus
+                    />
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      value={editOrder}
+                      onChange={(e) => setEditOrder(e.target.value)}
+                      className={inputCls}
+                    />
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => handleUpdate(cat._id)}
+                        disabled={isBusy || !editTitle.trim()}
+                        className="rounded-full bg-ink p-2 text-paper hover:bg-bordeaux disabled:opacity-50"
+                        title="Kaydet"
+                      >
+                        {isBusy ? (
+                          <Loader2 className="size-4 animate-spin" />
+                        ) : (
+                          <Check className="size-4" />
+                        )}
+                      </button>
+                      <button
+                        onClick={cancelEdit}
+                        disabled={isBusy}
+                        className="rounded-full border border-bordeaux/30 p-2 text-ink hover:bg-bordeaux/10"
+                        title="İptal"
+                      >
+                        <X className="size-4" />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-baseline gap-3">
+                        <p className="font-heading text-xl text-ink">
+                          {cat.title}
+                        </p>
+                        <span className="text-[10px] font-medium uppercase tracking-[0.22em] text-ink-soft">
+                          / {cat.slug}
+                        </span>
+                      </div>
+                      <p className="mt-1 text-xs text-ink-soft">
+                        Sıra: {cat.order ?? 0} ·{" "}
+                        <span
+                          className={
+                            cat.productCount > 0
+                              ? "text-bordeaux"
+                              : "text-ink-soft/70"
+                          }
+                        >
+                          {cat.productCount} ürün
+                        </span>
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => startEdit(cat)}
+                        disabled={isBusy}
+                        className="rounded p-1.5 text-ink-soft hover:bg-bordeaux/10 hover:text-bordeaux"
+                        title="Düzenle"
+                      >
+                        <Pencil className="size-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(cat)}
+                        disabled={isBusy || cat.productCount > 0}
+                        className="rounded p-1.5 text-ink-soft hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-ink-soft/50"
+                        title={
+                          cat.productCount > 0
+                            ? "Önce kullanan ürünleri kaldır"
+                            : "Sil"
+                        }
+                      >
+                        {isBusy ? (
+                          <Loader2 className="size-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="size-4" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </motion.li>
+            );
+          })}
+        </motion.ul>
+      ) : null}
+    </div>
+  );
+}

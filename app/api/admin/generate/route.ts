@@ -23,36 +23,34 @@ import { fal, isFalConfigured } from "@/lib/fal";
 export const maxDuration = 60;
 export const runtime = "nodejs";
 
-const PRODUCT_PROMPT =
-  "Editorial still life photograph featuring this exact handmade product " +
-  "as the centerpiece, arranged on a warm rustic wooden table or natural " +
-  "linen surface. Surround the item with carefully styled atmospheric props: " +
-  "a small bouquet of dried wildflowers, a vintage ceramic coffee cup with " +
-  "saucer, a few balls of natural cotton yarn in earthy tones, an open " +
-  "linen-bound notebook, a sprig of dried lavender or olive branch. " +
-  "Soft afternoon golden hour light streaming from the side, gentle shadows, " +
-  "shallow depth of field with the item in sharp focus, warm earthy color " +
-  "palette (ivory, terracotta, sage, soft gold), Kinfolk magazine aesthetic, " +
-  "natural film grain, intimate atmospheric mood, slightly elevated 3/4 " +
-  "overhead angle. Photorealistic, no text, no people. " +
-  "CRITICAL: keep the item's exact pattern, color, stitches, handles, knot " +
-  "details and shape identical to the input — only build the still life " +
-  "composition around it.";
+const DEFAULT_PRODUCT_NAME = "el emeği örgü çanta";
+const DEFAULT_STILLLIFE_STYLE = "doğal · Akdeniz · sıcak tonlar";
+const DEFAULT_LIFESTYLE_STYLE = "bohem · yazlık · doğal · Akdeniz";
 
-const LIFESTYLE_PROMPT =
-  "Editorial lifestyle fashion photograph featuring a young Mediterranean " +
-  "woman in her late 20s with natural undone hair, partially visible " +
-  "(focus on her hand, shoulder, or silhouette — not the full face), " +
-  "holding, wearing or carrying this exact product in a warm natural " +
-  "setting (sun-dappled cafe terrace with cobblestone, golden hour " +
-  "Mediterranean street with terracotta walls, or a stylish minimal " +
-  "Scandinavian interior with linen and wood). Soft natural golden hour " +
-  "lighting, warm earthy color palette matching the bag, candid relaxed " +
-  "pose, focus on the bag with shallow depth of field, Vogue editorial " +
-  "Kinfolk magazine style, subtle natural film grain, sophisticated mood. " +
-  "Photorealistic, no text, no logos. " +
-  "CRITICAL: keep the bag's exact pattern, color, stitches, handles and " +
-  "shape identical to the input photo — do not change the bag in any way.";
+function buildProductPrompt(productName: string, style: string) {
+  return (
+    `Yüklediğim görseldeki ${productName} için profesyonel bir still life ` +
+    `ürün fotoğrafı oluştur. Ürünün kendisine kesinlikle dokunma; form, ` +
+    `renk, doku, desen, materyal, ölçü hissi ve tüm detaylar birebir korunsun. ` +
+    `Sadece arka plan, ışık, zemin, kompozisyon ve styling değişsin. ` +
+    `${style} estetikte bir sahne kur. Ürün ana odakta olsun. Gerekirse az ` +
+    `sayıda dekor kullan ama ürünü bastırma. Sonuç gerçekçi, premium ve ` +
+    `e-ticaret kalitesinde olsun. En-boy oranı 3:4.`
+  );
+}
+
+function buildLifestylePrompt(productName: string, style: string) {
+  return (
+    `Yüklediğim görseldeki ${productName} için profesyonel bir lifestyle ` +
+    `fotoğraf oluştur. Ürünün kendisine kesinlikle dokunma; form, renk, ` +
+    `doku, desen, materyal, ölçü hissi ve tüm detaylar birebir korunsun. ` +
+    `Ürün bir model üzerinde doğal şekilde sergilensin. Model ürünü omzunda, ` +
+    `elinde veya üzerinde taşısın ya da kullansın. ${style} bir atmosfer ` +
+    `kur. Arka plan, ışık, styling ve model kombinasyonu ürüne uygun olsun. ` +
+    `Ürün net şekilde görünsün ve ana odak olarak kalsın. Sonuç gerçekçi, ` +
+    `estetik ve marka çekimi kalitesinde olsun. En-boy oranı 3:4.`
+  );
+}
 
 type FalImage = { url: string };
 type FalEditResult = { data?: { images?: FalImage[] } };
@@ -100,8 +98,22 @@ export async function POST(req: Request) {
   const inputUrlField = formData.get("inputUrl");
   const customPrompt = formData.get("prompt");
   const modeField = formData.get("mode");
+  const productNameField = formData.get("productName");
+  const styleField = formData.get("style");
   const skipUpscale = formData.get("skipUpscale") === "1";
   const mode = modeField === "lifestyle" ? "lifestyle" : "product";
+
+  const productName =
+    typeof productNameField === "string" && productNameField.trim()
+      ? productNameField.trim()
+      : DEFAULT_PRODUCT_NAME;
+
+  const style =
+    typeof styleField === "string" && styleField.trim()
+      ? styleField.trim()
+      : mode === "lifestyle"
+        ? DEFAULT_LIFESTYLE_STYLE
+        : DEFAULT_STILLLIFE_STYLE;
 
   // Önceden yüklenmiş URL varsa onu kullan
   let inputUrl: string | null = null;
@@ -130,7 +142,10 @@ export async function POST(req: Request) {
     );
   }
 
-  const defaultPrompt = mode === "lifestyle" ? LIFESTYLE_PROMPT : PRODUCT_PROMPT;
+  const defaultPrompt =
+    mode === "lifestyle"
+      ? buildLifestylePrompt(productName, style)
+      : buildProductPrompt(productName, style);
   const prompt =
     typeof customPrompt === "string" && customPrompt.trim()
       ? customPrompt.trim()
