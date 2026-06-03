@@ -9,9 +9,14 @@ import { ProductImage } from "./product-image";
 type ProductGalleryProps = {
   images: SanityImage[];
   title: string;
+  placeholderLabel?: string;
 };
 
-export function ProductGallery({ images, title }: ProductGalleryProps) {
+export function ProductGallery({
+  images,
+  title,
+  placeholderLabel,
+}: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const displayImages =
@@ -54,6 +59,7 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
           image={displayImages[activeIndex]}
           title={title}
           priority
+          placeholderLabel={placeholderLabel}
           sizes="(max-width: 1024px) 100vw, 50vw"
         />
         {hasRealImages && (
@@ -81,6 +87,7 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
               <ProductImage
                 image={image}
                 title={`${title} ${index + 1}`}
+                placeholderLabel={placeholderLabel}
                 className="!aspect-square !h-full !rounded-sm"
                 sizes="80px"
               />
@@ -146,6 +153,7 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
               image={displayImages[activeIndex]}
               title={title}
               priority
+              placeholderLabel={placeholderLabel}
               sizes="(max-width: 1024px) 100vw, 800px"
             />
             {displayImages.length > 1 && (

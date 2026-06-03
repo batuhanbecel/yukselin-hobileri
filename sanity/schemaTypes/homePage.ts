@@ -79,6 +79,34 @@ export const homePage = defineType({
       initialValue: "— sevgilerimle, Yüksel",
       group: "hero",
     }),
+    defineField({
+      name: "heroCardNumber",
+      title: "Hero kart — numara",
+      type: "string",
+      initialValue: "N° 01",
+      group: "hero",
+    }),
+    defineField({
+      name: "heroCardTitle",
+      title: "Hero kart — başlık (italic)",
+      type: "string",
+      initialValue: "el emeği",
+      group: "hero",
+    }),
+    defineField({
+      name: "heroCardLineStart",
+      title: "Hero kart — sol alt metin",
+      type: "string",
+      initialValue: "her ilmek",
+      group: "hero",
+    }),
+    defineField({
+      name: "heroCardLineEnd",
+      title: "Hero kart — sağ alt metin",
+      type: "string",
+      initialValue: "bir hikaye",
+      group: "hero",
+    }),
 
     // FEATURED
     defineField({
@@ -109,6 +137,13 @@ export const homePage = defineType({
       initialValue: "Tümünü gör →",
       group: "featured",
     }),
+    defineField({
+      name: "featuredSectionLabel",
+      title: "Bölüm etiketi",
+      type: "string",
+      initialValue: "/ Vitrin",
+      group: "featured",
+    }),
 
     // HIGHLIGHTS
     defineField({
@@ -123,6 +158,13 @@ export const homePage = defineType({
       title: "Başlık",
       type: "string",
       initialValue: "Her detay özenle",
+      group: "highlights",
+    }),
+    defineField({
+      name: "highlightsSectionLabel",
+      title: "Bölüm etiketi",
+      type: "string",
+      initialValue: "/ Felsefe",
       group: "highlights",
     }),
     defineField({
@@ -200,6 +242,13 @@ export const homePage = defineType({
       rows: 2,
       initialValue:
         "Burada vitrin var, sohbet Instagram'da. Üç basit adımda yanındayız.",
+      group: "steps",
+    }),
+    defineField({
+      name: "stepsSectionLabel",
+      title: "Bölüm etiketi",
+      type: "string",
+      initialValue: "/ Süreç",
       group: "steps",
     }),
     defineField({

@@ -3,16 +3,23 @@ import { PortableText } from "@portabletext/react";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { InstagramButton } from "@/components/instagram-button";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
-import { getAboutPage } from "@/lib/sanity/fetch";
+import { getAboutPage, getSiteSettings } from "@/lib/sanity/fetch";
 
-export const metadata: Metadata = {
-  title: "Hakkımda",
-  description:
-    "Yüksel'in Hobileri — annemin sevgiyle ördüğü çantaların hikayesi.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const about = await getAboutPage();
+  return {
+    title: about.metaTitle || about.pageTitle || "Hakkımda",
+    description:
+      about.metaDescription ||
+      "Yüksel'in Hobileri — annemin sevgiyle ördüğü çantaların hikayesi.",
+  };
+}
 
 export default async function AboutPage() {
-  const about = await getAboutPage();
+  const [about, settings] = await Promise.all([
+    getAboutPage(),
+    getSiteSettings(),
+  ]);
   const values = about.values ?? [];
   const story = about.story ?? [];
 
@@ -20,7 +27,10 @@ export default async function AboutPage() {
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-8 sm:py-20">
       <Breadcrumb
         items={[
-          { label: "Ana sayfa", href: "/" },
+          {
+            label: settings.breadcrumbHomeLabel || "Ana sayfa",
+            href: "/",
+          },
           { label: about.pageTitle || "Hakkımda" },
         ]}
       />
@@ -30,7 +40,7 @@ export default async function AboutPage() {
           <div className="lg:col-span-7">
             <div className="flex items-center gap-3">
               <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-bordeaux">
-                / Hikaye
+                {about.storySectionLabel || "/ Hikaye"}
               </span>
               <span className="h-px flex-1 bg-bordeaux/20" />
             </div>
@@ -53,7 +63,7 @@ export default async function AboutPage() {
           <div className="grid gap-10 lg:grid-cols-12">
             <div className="lg:col-span-2">
               <p className="font-display text-7xl text-bordeaux/30 sm:text-8xl">
-                Y
+                {about.dropCapLetter || "Y"}
               </p>
             </div>
             <div className="relative lg:col-span-10">
@@ -84,7 +94,7 @@ export default async function AboutPage() {
           <Reveal className="mb-10">
             <div className="flex items-center gap-3">
               <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-olive">
-                / Değerler
+                {about.valuesSectionLabel || "/ Değerler"}
               </span>
               <span className="h-px flex-1 bg-olive/20" />
             </div>
@@ -99,9 +109,7 @@ export default async function AboutPage() {
                   <p className="font-display text-3xl text-bordeaux/40">
                     {String(i + 1).padStart(2, "0")}
                   </p>
-                  <p className="mt-3 font-heading text-xl text-ink">
-                    {v.title}
-                  </p>
+                  <p className="mt-3 font-heading text-xl text-ink">{v.title}</p>
                   <p className="mt-2 text-sm leading-relaxed text-ink-soft">
                     {v.text}
                   </p>

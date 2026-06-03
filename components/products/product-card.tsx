@@ -5,8 +5,13 @@ import { Gift } from "lucide-react";
 import { motion } from "motion/react";
 import { InstagramButton } from "@/components/instagram-button";
 import { ShopierButton } from "@/components/shopier-button";
-import { computeSale, formatPrice } from "@/lib/format";
+import {
+  computeSale,
+  formatPrice,
+  formatSaleBadge,
+} from "@/lib/format";
 import type { Product } from "@/lib/sanity/types";
+import { useSiteSettings } from "@/lib/site-context";
 import { cn } from "@/lib/utils";
 import { ProductImage } from "./product-image";
 import { StatusBadge } from "./status-badge";
@@ -15,15 +20,29 @@ type ProductCardProps = {
   product: Product;
   priority?: boolean;
   index?: number;
+  imagePlaceholderLabel?: string;
 };
 
-export function ProductCard({ product, priority, index = 0 }: ProductCardProps) {
+export function ProductCard({
+  product,
+  priority,
+  index = 0,
+  imagePlaceholderLabel,
+}: ProductCardProps) {
+  const settings = useSiteSettings();
   const slug = product.slug.current;
   const sale = computeSale(product.price, product.salePrice);
   const isSold = product.status === "sold";
+  const saleTemplate = settings.saleBadgeTemplate || "%{percent} indirim";
   const badgeText =
     product.saleBadge?.trim() ||
-    (sale.onSale && sale.percentOff ? `%${sale.percentOff} indirim` : null);
+    (sale.onSale && sale.percentOff
+      ? formatSaleBadge(saleTemplate, sale.percentOff)
+      : null);
+  const soldLabel = settings.statusSoldLabel || "Satıldı";
+  const giftLabel = settings.giftReadyLabel || "Hediye paketli";
+  const placeholder =
+    imagePlaceholderLabel || settings.imagePlaceholderLabel || "fotoğraf yakında";
 
   return (
     <motion.article
@@ -38,7 +57,6 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
       className="group relative"
     >
       <Link href={`/urunler/${slug}`} className="block">
-        {/* Image frame */}
         <div className="relative overflow-hidden rounded-2xl bg-ivory-deep">
           {!isSold && sale.onSale && badgeText && (
             <span className="absolute left-4 top-4 z-10 rounded-full bg-bordeaux px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-paper shadow-sm">
@@ -47,11 +65,10 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
           )}
           {isSold && (
             <span className="absolute left-4 top-4 z-10 rounded-full bg-ink px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-paper shadow-sm">
-              Satıldı
+              {soldLabel}
             </span>
           )}
 
-          {/* index number — editorial */}
           <span className="font-display absolute bottom-3 right-4 z-10 text-3xl text-paper/80 mix-blend-difference">
             N°{String(index + 1).padStart(2, "0")}
           </span>
@@ -66,12 +83,12 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
               image={product.images?.[0]}
               title={product.title}
               priority={priority}
+              placeholderLabel={placeholder}
               className="!rounded-2xl"
             />
           </div>
         </div>
 
-        {/* Meta */}
         <div className="mt-5 space-y-2">
           <div className="flex flex-wrap items-center gap-1.5">
             {product.category?.title && (
@@ -85,7 +102,7 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
             {product.giftReady && !isSold && (
               <span className="inline-flex items-center gap-1 rounded-full border border-gold/40 bg-gold/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-[#8a6d2f]">
                 <Gift className="size-3" />
-                Hediye paketli
+                {giftLabel}
               </span>
             )}
           </div>
@@ -111,7 +128,6 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
         </div>
       </Link>
 
-      {/* Actions */}
       {!isSold && (
         <div className="mt-4 flex flex-col gap-2">
           <InstagramButton
@@ -120,11 +136,7 @@ export function ProductCard({ product, priority, index = 0 }: ProductCardProps) 
             className="w-full"
           />
           {product.shopierUrl && (
-            <ShopierButton
-              url={product.shopierUrl}
-              size="sm"
-              className="w-full"
-            />
+            <ShopierButton url={product.shopierUrl} size="sm" className="w-full" />
           )}
         </div>
       )}

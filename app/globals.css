@@ -10,7 +10,7 @@
   --font-sans: var(--font-inter);
   --font-heading: var(--font-fraunces);
   --font-display: var(--font-italiana);
-  --font-hand: var(--font-caveat);
+  --font-hand: var(--font-patrick-hand);
 
   /* Atelier — refined warm palette */
   --color-ivory: #f7efe1;
@@ -152,7 +152,8 @@
     letter-spacing: 0.01em;
   }
   .font-hand {
-    font-family: var(--font-caveat), "Comic Sans MS", cursive;
+    font-family: var(--font-patrick-hand), cursive;
+    font-weight: 400;
   }
 
   /* Refined selection */

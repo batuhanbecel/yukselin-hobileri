@@ -28,7 +28,7 @@ export default async function HomePage() {
             <div className="lg:col-span-7">
               <div className="flex items-center gap-3">
                 <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-olive">
-                  / Felsefe
+                  {home.highlightsSectionLabel || "/ Felsefe"}
                 </span>
                 <span className="h-px flex-1 bg-olive/20" />
               </div>
@@ -81,7 +81,7 @@ export default async function HomePage() {
             <div className="mx-auto flex max-w-sm items-center gap-3">
               <span className="h-px flex-1 bg-bordeaux/30" />
               <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-bordeaux">
-                / Süreç
+                {home.stepsSectionLabel || "/ Süreç"}
               </span>
               <span className="h-px flex-1 bg-bordeaux/30" />
             </div>

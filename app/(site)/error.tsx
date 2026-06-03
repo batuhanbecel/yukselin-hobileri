@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { useSiteSettings } from "@/lib/site-context";
 
 export default function Error({
   error,
@@ -11,6 +12,8 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const settings = useSiteSettings();
+
   useEffect(() => {
     console.error(error);
   }, [error]);
@@ -31,26 +34,32 @@ export default function Error({
           strokeLinecap="round"
         />
       </svg>
-      <p className="font-hand mt-6 text-2xl text-terracotta">bir aksilik oldu</p>
+      {settings.errorHandwritten && (
+        <p className="font-hand mt-6 text-2xl text-terracotta">
+          {settings.errorHandwritten}
+        </p>
+      )}
       <h1 className="mt-1 font-heading text-3xl text-cocoa">
-        Sayfa yüklenemedi
+        {settings.errorTitle || "Sayfa yüklenemedi"}
       </h1>
-      <p className="mt-3 text-sm text-cocoa-soft">
-        Sanırım bir ilmek kaçtı. Bir dakika sonra tekrar dene.
-      </p>
+      {settings.errorText && (
+        <p className="mt-3 text-sm text-cocoa-soft">{settings.errorText}</p>
+      )}
       <div className="mt-8 flex flex-col gap-3 sm:flex-row">
         <Button
           onClick={reset}
           className="rounded-full bg-terracotta text-white hover:bg-terracotta/90"
         >
-          Tekrar dene
+          {settings.errorRetryLabel || "Tekrar dene"}
         </Button>
         <Button
           asChild
           variant="outline"
           className="rounded-full border-terracotta/30 bg-white/60 text-cocoa hover:bg-terracotta-soft/30"
         >
-          <Link href="/">Ana sayfaya dön</Link>
+          <Link href="/">
+            {settings.errorHomeLabel || "Ana sayfaya dön"}
+          </Link>
         </Button>
       </div>
     </div>

@@ -26,6 +26,31 @@ export const productsPage = defineType({
         "Her biri tek tek, sevgiyle örüldü. Beğendiğin ürünün altındaki Instagram butonuna dokun, gerisini birlikte halledelim.",
     }),
     defineField({
+      name: "collectionSectionLabel",
+      title: "Bölüm etiketi (liste)",
+      type: "string",
+      initialValue: "/ Koleksiyon",
+    }),
+    defineField({
+      name: "categorySectionLabel",
+      title: "Bölüm etiketi (kategori)",
+      type: "string",
+      initialValue: "/ Kategori",
+    }),
+    defineField({
+      name: "metaTitle",
+      title: "SEO başlık",
+      type: "string",
+      initialValue: "Ürünler",
+    }),
+    defineField({
+      name: "metaDescription",
+      title: "SEO açıklama",
+      type: "text",
+      rows: 2,
+      initialValue: "Annemin el emeğiyle ördüğü tüm çantalar. Sipariş için Instagram.",
+    }),
+    defineField({
       name: "emptyMessage",
       title: "Boş durum mesajı",
       type: "string",

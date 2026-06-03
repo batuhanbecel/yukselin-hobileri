@@ -12,7 +12,11 @@ import { ShopierButton } from "@/components/shopier-button";
 import { WhatsappButton } from "@/components/whatsapp-button";
 import { Button } from "@/components/ui/button";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
-import { computeSale, formatPrice } from "@/lib/format";
+import {
+  computeSale,
+  formatPrice,
+  formatSaleBadge,
+} from "@/lib/format";
 import {
   getProductBySlug,
   getProductSlugs,
@@ -34,9 +38,16 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = await getProductBySlug(slug);
-  if (!product) return { title: "Çanta bulunamadı" };
+  const [product, settings] = await Promise.all([
+    getProductBySlug(slug),
+    getSiteSettings(),
+  ]);
+  if (!product) {
+    return { title: settings.productNotFoundTitle || "Çanta bulunamadı" };
+  }
   const sale = computeSale(product.price, product.salePrice);
+  const suffix =
+    settings.productMetaDescriptionSuffix || "Instagram'dan sipariş verin.";
   const ogImage = product.images?.[0]?.asset?._ref
     ? urlFor(product.images[0]).width(1200).height(630).fit("crop").url()
     : undefined;
@@ -44,7 +55,7 @@ export async function generateMetadata({
     title: product.title,
     description:
       product.description ||
-      `${product.title} — ${formatPrice(sale.effectivePrice)}. Instagram'dan sipariş verin.`,
+      `${product.title} — ${formatPrice(sale.effectivePrice)}. ${suffix}`,
     openGraph: {
       title: product.title,
       description: product.description,
@@ -66,10 +77,17 @@ export default async function ProductDetailPage({ params }: PageProps) {
   const related = await getRelatedProducts(product);
   const shopierUrl = product.shopierUrl || settings.shopierStoreUrl;
   const sale = computeSale(product.price, product.salePrice);
+  const saleTemplate = settings.saleBadgeTemplate || "%{percent} indirim";
   const saleBadge =
     product.saleBadge?.trim() ||
-    (sale.onSale && sale.percentOff ? `%${sale.percentOff} indirim` : null);
+    (sale.onSale && sale.percentOff
+      ? formatSaleBadge(saleTemplate, sale.percentOff)
+      : null);
   const isSold = product.status === "sold";
+  const homeLabel = settings.breadcrumbHomeLabel || "Ana sayfa";
+  const productsLabel = settings.breadcrumbProductsLabel || "Ürünler";
+  const backLabel = settings.backToProductsLabel || "← Tüm çantalar";
+  const giftLabel = settings.giftReadyLabel || "Hediye paketli";
 
   const ogImage = product.images?.[0]?.asset?._ref
     ? urlFor(product.images[0]).width(1200).height(1200).fit("crop").url()
@@ -82,7 +100,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
     description: product.description,
     image: ogImage ? [ogImage] : undefined,
     sku: product._id,
-    brand: { "@type": "Brand", name: SITE_NAME },
+    brand: { "@type": "Brand", name: settings.siteTitle || SITE_NAME },
     category: product.category?.title,
     offers: {
       "@type": "Offer",
@@ -92,8 +110,8 @@ export default async function ProductDetailPage({ params }: PageProps) {
       availability: isSold
         ? "https://schema.org/SoldOut"
         : product.status === "made-to-order"
-        ? "https://schema.org/PreOrder"
-        : "https://schema.org/InStock",
+          ? "https://schema.org/PreOrder"
+          : "https://schema.org/InStock",
     },
   };
 
@@ -106,8 +124,8 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
       <Breadcrumb
         items={[
-          { label: "Ana sayfa", href: "/" },
-          { label: "Ürünler", href: "/urunler" },
+          { label: homeLabel, href: "/" },
+          { label: productsLabel, href: "/urunler" },
           ...(product.category
             ? [
                 {
@@ -125,12 +143,16 @@ export default async function ProductDetailPage({ params }: PageProps) {
         variant="ghost"
         className="mb-8 -ml-2 text-ink-soft hover:text-bordeaux"
       >
-        <Link href="/urunler">← Tüm çantalar</Link>
+        <Link href="/urunler">{backLabel}</Link>
       </Button>
 
       <div className="grid gap-12 lg:grid-cols-12 lg:gap-20">
         <Reveal className="lg:col-span-7">
-          <ProductGallery images={product.images} title={product.title} />
+          <ProductGallery
+            images={product.images}
+            title={product.title}
+            placeholderLabel={settings.imagePlaceholderLabel}
+          />
         </Reveal>
 
         <Reveal delay={0.15} className="lg:col-span-5">
@@ -153,7 +175,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
               {product.giftReady && !isSold && (
                 <span className="inline-flex items-center gap-1 rounded-full border border-gold/40 bg-gold/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-[#8a6d2f]">
                   <Gift className="size-3" />
-                  Hediye paketli
+                  {giftLabel}
                 </span>
               )}
             </div>
@@ -185,7 +207,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 {product.dimensions && (
                   <div className="flex items-baseline justify-between gap-4 border-b border-bordeaux/10 pb-2">
                     <dt className="text-[11px] font-medium uppercase tracking-[0.22em] text-ink-soft">
-                      Boyut
+                      {settings.labelDimensions || "Boyut"}
                     </dt>
                     <dd className="text-ink">{product.dimensions}</dd>
                   </div>
@@ -193,7 +215,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 {product.material && (
                   <div className="flex items-baseline justify-between gap-4 border-b border-bordeaux/10 pb-2">
                     <dt className="text-[11px] font-medium uppercase tracking-[0.22em] text-ink-soft">
-                      Malzeme
+                      {settings.labelMaterial || "Malzeme"}
                     </dt>
                     <dd className="text-ink">{product.material}</dd>
                   </div>
@@ -201,7 +223,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 {product.care && (
                   <div className="flex items-baseline justify-between gap-4 border-b border-bordeaux/10 pb-2">
                     <dt className="text-[11px] font-medium uppercase tracking-[0.22em] text-ink-soft">
-                      Bakım
+                      {settings.labelCare || "Bakım"}
                     </dt>
                     <dd className="text-right text-ink">{product.care}</dd>
                   </div>
@@ -212,7 +234,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
             {product.colors && product.colors.length > 0 && (
               <div>
                 <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.22em] text-ink-soft">
-                  Renk seçenekleri
+                  {settings.labelColors || "Renk seçenekleri"}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {product.colors.map((c, i) => (
@@ -269,11 +291,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
                   />
                 )}
                 {shopierUrl && (
-                  <ShopierButton
-                    url={shopierUrl}
-                    size="lg"
-                    className="w-full"
-                  />
+                  <ShopierButton url={shopierUrl} size="lg" className="w-full" />
                 )}
               </div>
             )}

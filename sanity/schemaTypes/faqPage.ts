@@ -26,6 +26,44 @@ export const faqPage = defineType({
         "Sipariş, kargo ve ürünlerle ilgili en sık aldığım soruları burada topladım.",
     }),
     defineField({
+      name: "sectionLabel",
+      title: "Bölüm etiketi",
+      type: "string",
+      initialValue: "/ Soru-Cevap",
+    }),
+    defineField({
+      name: "metaTitle",
+      title: "SEO başlık",
+      type: "string",
+      initialValue: "SSS — Sıkça Sorulanlar",
+    }),
+    defineField({
+      name: "metaDescription",
+      title: "SEO açıklama",
+      type: "text",
+      rows: 2,
+      initialValue:
+        "Sipariş, kargo, bakım gibi sık sorulan soruların cevapları burada.",
+    }),
+    defineField({
+      name: "emptyMessage",
+      title: "Boş liste mesajı",
+      type: "string",
+      initialValue: "Henüz soru eklenmemiş.",
+    }),
+    defineField({
+      name: "ctaHandwritten",
+      title: "Alt CTA — el yazısı",
+      type: "string",
+      initialValue: "başka bir sorun mu var?",
+    }),
+    defineField({
+      name: "ctaTitle",
+      title: "Alt CTA — başlık",
+      type: "string",
+      initialValue: "Bana doğrudan yazabilirsin",
+    }),
+    defineField({
       name: "items",
       title: "Sorular",
       type: "array",

@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { Heart } from "lucide-react";
 import { InstagramIcon } from "@/components/icons/instagram-icon";
-import { NAV_LINKS, SITE_NAME, INSTAGRAM_URL } from "@/lib/constants";
+import { INSTAGRAM_URL, SITE_NAME } from "@/lib/constants";
+import { getNavLinks } from "@/lib/nav";
+import type { NavLink } from "@/lib/sanity/types";
 
 type FooterProps = {
   siteTitle?: string;
@@ -11,6 +13,11 @@ type FooterProps = {
   navTitle?: string;
   instagramUrl?: string;
   instagramHandle?: string;
+  navLinks?: NavLink[];
+  studioLabel?: string;
+  contactTitle?: string;
+  contactLine1?: string;
+  contactLine2?: string;
 };
 
 export function Footer({
@@ -21,22 +28,29 @@ export function Footer({
   navTitle,
   instagramUrl,
   instagramHandle,
+  navLinks,
+  studioLabel,
+  contactTitle,
+  contactLine1,
+  contactLine2,
 }: FooterProps) {
   const year = new Date().getFullYear();
   const title = siteTitle || SITE_NAME;
   const igUrl = instagramUrl || INSTAGRAM_URL;
   const igHandle = instagramHandle || "@ykslbcl";
+  const links = getNavLinks({ navLinks });
 
   return (
     <footer className="relative mt-auto border-t border-bordeaux/15 bg-ivory-deep/40">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-8">
         <div className="grid gap-12 lg:grid-cols-12">
-          {/* Brand block */}
           <div className="space-y-5 lg:col-span-5">
             <div className="flex items-center gap-3">
-              <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-bordeaux">
-                / Atölye
-              </span>
+              {studioLabel && (
+                <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-bordeaux">
+                  {studioLabel}
+                </span>
+              )}
               <span className="h-px w-12 bg-bordeaux/30" />
             </div>
             <p className="font-heading text-3xl text-ink">{title}</p>
@@ -59,13 +73,12 @@ export function Footer({
             </Link>
           </div>
 
-          {/* Nav */}
           <nav className="lg:col-span-3 lg:col-start-7">
             {navTitle && (
               <p className="font-hand mb-3 text-lg text-bordeaux">{navTitle}</p>
             )}
             <ul className="space-y-2">
-              {NAV_LINKS.map((link) => (
+              {links.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
@@ -78,18 +91,21 @@ export function Footer({
             </ul>
           </nav>
 
-          {/* Meta */}
           <div className="lg:col-span-3">
-            <p className="font-hand mb-3 text-lg text-bordeaux">iletişim</p>
+            {contactTitle && (
+              <p className="font-hand mb-3 text-lg text-bordeaux">{contactTitle}</p>
+            )}
             <ul className="space-y-2 text-sm text-ink-soft">
-              <li>Sipariş için Instagram'dan yazın.</li>
-              <li>Türkiye'nin her yerine kargo.</li>
+              {contactLine1 && <li>{contactLine1}</li>}
+              {contactLine2 && <li>{contactLine2}</li>}
             </ul>
           </div>
         </div>
 
         <div className="mt-16 flex flex-col items-center justify-between gap-3 border-t border-dashed border-bordeaux/20 pt-8 text-center text-sm text-ink-soft sm:flex-row sm:text-left">
-          <p>© {year} {title}</p>
+          <p>
+            © {year} {title}
+          </p>
           {signature && (
             <p className="font-hand inline-flex items-center gap-2 text-base">
               {signature}

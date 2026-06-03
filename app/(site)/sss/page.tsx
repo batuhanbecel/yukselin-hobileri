@@ -2,16 +2,20 @@ import type { Metadata } from "next";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { InstagramButton } from "@/components/instagram-button";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
-import { getFaqPage } from "@/lib/sanity/fetch";
+import { getFaqPage, getSiteSettings } from "@/lib/sanity/fetch";
 
-export const metadata: Metadata = {
-  title: "SSS — Sıkça Sorulanlar",
-  description:
-    "Sipariş, kargo, bakım gibi sık sorulan soruların cevapları burada.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const faq = await getFaqPage();
+  return {
+    title: faq.metaTitle || faq.pageTitle || "SSS",
+    description:
+      faq.metaDescription ||
+      "Sipariş, kargo, bakım gibi sık sorulan soruların cevapları burada.",
+  };
+}
 
 export default async function FaqPageRoute() {
-  const faq = await getFaqPage();
+  const [faq, settings] = await Promise.all([getFaqPage(), getSiteSettings()]);
   const items = faq.items ?? [];
 
   const jsonLd = {
@@ -35,7 +39,10 @@ export default async function FaqPageRoute() {
 
       <Breadcrumb
         items={[
-          { label: "Ana sayfa", href: "/" },
+          {
+            label: settings.breadcrumbHomeLabel || "Ana sayfa",
+            href: "/",
+          },
           { label: faq.pageTitle || "SSS" },
         ]}
       />
@@ -45,7 +52,7 @@ export default async function FaqPageRoute() {
           <div className="lg:col-span-7">
             <div className="flex items-center gap-3">
               <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-bordeaux">
-                / Soru-Cevap
+                {faq.sectionLabel || "/ Soru-Cevap"}
               </span>
               <span className="h-px flex-1 bg-bordeaux/20" />
             </div>
@@ -94,18 +101,24 @@ export default async function FaqPageRoute() {
           ))}
         </Stagger>
       ) : (
-        <p className="text-center text-ink-soft">Henüz soru eklenmemiş.</p>
+        <p className="text-center text-ink-soft">
+          {faq.emptyMessage || "Henüz soru eklenmemiş."}
+        </p>
       )}
 
       <Reveal>
         <div className="mt-20 grid items-center gap-6 rounded-[2rem] border border-bordeaux/15 bg-gradient-to-br from-ivory-deep via-paper to-gold-soft/30 p-10 lg:grid-cols-12 lg:p-14">
           <div className="lg:col-span-8">
-            <p className="font-hand text-2xl text-bordeaux">
-              başka bir sorun mu var?
-            </p>
-            <p className="font-heading mt-1 text-3xl font-light text-ink sm:text-4xl">
-              Bana doğrudan yazabilirsin
-            </p>
+            {faq.ctaHandwritten && (
+              <p className="font-hand text-2xl text-bordeaux">
+                {faq.ctaHandwritten}
+              </p>
+            )}
+            {faq.ctaTitle && (
+              <p className="font-heading mt-1 text-3xl font-light text-ink sm:text-4xl">
+                {faq.ctaTitle}
+              </p>
+            )}
           </div>
           <div className="lg:col-span-4 lg:text-right">
             <InstagramButton size="lg" />

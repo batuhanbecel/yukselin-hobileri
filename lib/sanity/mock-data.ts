@@ -106,17 +106,67 @@ export const mockProducts: Product[] = [
 
 export const mockSiteSettings: SiteSettings = {
   siteTitle: "Yüksel'in Hobileri",
+  navLinks: [
+    { _key: "n1", label: "Ana Sayfa", href: "/" },
+    { _key: "n2", label: "Ürünler", href: "/urunler" },
+    { _key: "n3", label: "Hakkımda", href: "/hakkimizda" },
+    { _key: "n4", label: "SSS", href: "/sss" },
+  ],
   instagramUrl: "https://www.instagram.com/ykslbcl/",
   instagramHandle: "@ykslbcl",
   headerTagline: "el emeği örgü",
+  footerStudioLabel: "/ Atölye",
   footerTagline: "her ilmek bir hikaye",
   footerDescription:
     "Bu sitedeki ürünler sadece paylaşım içindir. Beğendiğiniz bir çanta varsa Instagram'dan bana yazabilirsiniz.",
+  footerContactTitle: "iletişim",
+  footerContactLine1: "Sipariş için Instagram'dan yazın.",
+  footerContactLine2: "Türkiye'nin her yerine kargo.",
   footerSignature: "sevgiyle örüldü",
   footerNavTitle: "sayfalar",
+  instagramHeaderLabel: "Instagram",
+  instagramButtonLabel: "Instagram'dan yaz",
+  instagramProductButtonLabel: "Instagram'dan sipariş ver",
+  instagramDmTemplate: 'Merhaba, "{title}" hakkında bilgi almak istiyorum.',
+  shopierButtonLabel: "Shopier'dan satın al",
+  whatsappButtonLabel: "WhatsApp'tan yaz",
+  breadcrumbHomeLabel: "Ana sayfa",
+  breadcrumbProductsLabel: "Ürünler",
+  backToProductsLabel: "← Tüm çantalar",
+  allCategoriesLabel: "Hepsi",
+  giftReadyLabel: "Hediye paketli",
+  saleBadgeTemplate: "%{percent} indirim",
+  statusAvailableLabel: "Stokta",
+  statusMadeToOrderLabel: "Sipariş üzerine",
+  statusSoldLabel: "Satıldı",
+  imagePlaceholderLabel: "fotoğraf yakında",
+  relatedProductsHandwritten: "bunlar da hoşuna gidebilir",
+  relatedProductsTitle: "Benzer çantalar",
+  productNotFoundTitle: "Çanta bulunamadı",
+  productMetaDescriptionSuffix: "Instagram'dan sipariş verin.",
+  labelDimensions: "Boyut",
+  labelMaterial: "Malzeme",
+  labelCare: "Bakım",
+  labelColors: "Renk seçenekleri",
   detailNoteHandwritten: "küçük bir not",
   detailNoteText:
     "Bu siteden doğrudan satış yapılmamaktadır. Çanta hoşunuza gittiyse Instagram'dan bana yazabilirsiniz; renk, model ve detaylarını birlikte konuşalım.",
+  seoTitleSuffix: "El Emeği Örgü Çantalar",
+  seoDescription:
+    "Yüksel'in Hobileri — annemin sevgiyle ördüğü el emeği çantalar. Sipariş ve bilgi için Instagram @ykslbcl.",
+  seoKeywords: ["örgü çanta", "el örgüsü", "el emeği", "Yüksel'in Hobileri"],
+  ogDescription: "Annemin sevgiyle ördüğü el emeği çantalar.",
+  errorHandwritten: "bir aksilik oldu",
+  errorTitle: "Sayfa yüklenemedi",
+  errorText: "Sanırım bir ilmek kaçtı. Bir dakika sonra tekrar dene.",
+  errorRetryLabel: "Tekrar dene",
+  errorHomeLabel: "Ana sayfaya dön",
+  notFoundHandwritten: "aman",
+  notFoundTitle: "Sayfa bulunamadı",
+  notFoundText: "Aradığın sayfa burada değil. Belki ipucu kayboldu.",
+  notFoundHomeLabel: "Ana sayfaya dön",
+  loadingHandwritten: "örülüyor...",
+  loadingText: "Sayfa hazırlanıyor",
 };
 
 export const mockHomePage: HomePage = {
@@ -128,14 +178,20 @@ export const mockHomePage: HomePage = {
   heroSubtitle:
     "Her ilmek bir hikaye, her çanta tek parça. Yılların deneyimi ve sıcacık bir kalple hazırlandı.",
   heroSignature: "— sevgilerimle, Yüksel",
+  heroCardNumber: "N° 01",
+  heroCardTitle: "el emeği",
+  heroCardLineStart: "her ilmek",
+  heroCardLineEnd: "bir hikaye",
 
   featuredHandwritten: "seçtiklerim",
   featuredTitle: "Öne çıkan çantalar",
   featuredSubtitle: "En çok sevilen, en çok sorulan parçalar.",
   featuredLinkLabel: "Tümünü gör →",
+  featuredSectionLabel: "/ Vitrin",
 
   highlightsHandwritten: "neden bu çantalar",
   highlightsTitle: "Her detay özenle",
+  highlightsSectionLabel: "/ Felsefe",
   highlights: [
     {
       _key: "h1",
@@ -167,6 +223,7 @@ export const mockHomePage: HomePage = {
   stepsTitle: "Nasıl sipariş verilir?",
   stepsSubtitle:
     "Burada vitrin var, sohbet Instagram'da. Üç basit adımda yanındayız.",
+  stepsSectionLabel: "/ Süreç",
   steps: [
     {
       _key: "s1",
@@ -198,6 +255,11 @@ export const mockHomePage: HomePage = {
 export const mockAboutPage: AboutPage = {
   pageHandwritten: "küçük hikayemiz",
   pageTitle: "Hakkımda",
+  metaTitle: "Hakkımda",
+  metaDescription:
+    "Yüksel'in Hobileri — annemin sevgiyle ördüğü çantaların hikayesi.",
+  storySectionLabel: "/ Hikaye",
+  dropCapLetter: "Y",
   story: [
     {
       _type: "block",
@@ -229,6 +291,7 @@ export const mockAboutPage: AboutPage = {
     },
   ],
   storySignature: "— Yüksel",
+  valuesSectionLabel: "/ Değerler",
   values: [
     {
       _key: "v1",
@@ -261,6 +324,13 @@ export const mockFaqPage: FaqPage = {
   pageTitle: "Sıkça Sorulanlar",
   pageDescription:
     "Sipariş, kargo ve ürünlerle ilgili en sık aldığım soruları burada topladım.",
+  sectionLabel: "/ Soru-Cevap",
+  metaTitle: "SSS — Sıkça Sorulanlar",
+  metaDescription:
+    "Sipariş, kargo, bakım gibi sık sorulan soruların cevapları burada.",
+  emptyMessage: "Henüz soru eklenmemiş.",
+  ctaHandwritten: "başka bir sorun mu var?",
+  ctaTitle: "Bana doğrudan yazabilirsin",
   items: [
     {
       _key: "f1",
@@ -300,6 +370,11 @@ export const mockProductsPage: ProductsPage = {
   pageTitle: "Ürünler",
   pageDescription:
     "Her biri tek tek, sevgiyle örüldü. Beğendiğin ürünün altındaki Instagram butonuna dokun, gerisini birlikte halledelim.",
+  collectionSectionLabel: "/ Koleksiyon",
+  categorySectionLabel: "/ Kategori",
+  metaTitle: "Ürünler",
+  metaDescription:
+    "Annemin el emeğiyle ördüğü tüm çantalar. Sipariş için Instagram.",
   emptyMessage: "yakında burada...",
   emptyDescription: "Yeni çantalar şu an tezgahta. Çok yakında paylaşacağım.",
 };

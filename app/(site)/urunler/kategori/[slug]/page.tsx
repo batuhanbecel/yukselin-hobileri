@@ -8,6 +8,7 @@ import {
   getCategories,
   getProducts,
   getProductsPage,
+  getSiteSettings,
 } from "@/lib/sanity/fetch";
 
 type PageProps = {
@@ -34,10 +35,11 @@ export async function generateMetadata({
 
 export default async function CategoryPage({ params }: PageProps) {
   const { slug } = await params;
-  const [products, categories, page] = await Promise.all([
+  const [products, categories, page, settings] = await Promise.all([
     getProducts(slug),
     getCategories(),
     getProductsPage(),
+    getSiteSettings(),
   ]);
 
   const cat = categories.find((c) => c.slug.current === slug);
@@ -47,8 +49,14 @@ export default async function CategoryPage({ params }: PageProps) {
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-8 sm:py-20">
       <Breadcrumb
         items={[
-          { label: "Ana sayfa", href: "/" },
-          { label: page.pageTitle || "Ürünler", href: "/urunler" },
+          {
+            label: settings.breadcrumbHomeLabel || "Ana sayfa",
+            href: "/",
+          },
+          {
+            label: page.pageTitle || "Ürünler",
+            href: "/urunler",
+          },
           { label: cat.title },
         ]}
       />
@@ -58,7 +66,7 @@ export default async function CategoryPage({ params }: PageProps) {
           <div className="lg:col-span-7">
             <div className="flex items-center gap-3">
               <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-bordeaux">
-                / Kategori
+                {page.categorySectionLabel || "/ Kategori"}
               </span>
               <span className="h-px flex-1 bg-bordeaux/20" />
             </div>
@@ -74,12 +82,17 @@ export default async function CategoryPage({ params }: PageProps) {
         </div>
       </Reveal>
 
-      <CategoryFilter categories={categories} activeSlug={slug} />
+      <CategoryFilter
+        categories={categories}
+        activeSlug={slug}
+        allLabel={settings.allCategoriesLabel}
+      />
 
       <ProductGrid
         products={products}
         emptyMessage={page.emptyMessage}
         emptyDescription={page.emptyDescription}
+        imagePlaceholderLabel={settings.imagePlaceholderLabel}
       />
     </div>
   );

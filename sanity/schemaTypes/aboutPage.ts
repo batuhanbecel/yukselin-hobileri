@@ -26,6 +26,36 @@ export const aboutPage = defineType({
       initialValue: "Hakkımda",
       group: "header",
     }),
+    defineField({
+      name: "metaTitle",
+      title: "SEO başlık",
+      type: "string",
+      initialValue: "Hakkımda",
+      group: "header",
+    }),
+    defineField({
+      name: "metaDescription",
+      title: "SEO açıklama",
+      type: "text",
+      rows: 2,
+      initialValue:
+        "Yüksel'in Hobileri — annemin sevgiyle ördüğü çantaların hikayesi.",
+      group: "header",
+    }),
+    defineField({
+      name: "storySectionLabel",
+      title: "Hikaye bölüm etiketi",
+      type: "string",
+      initialValue: "/ Hikaye",
+      group: "header",
+    }),
+    defineField({
+      name: "dropCapLetter",
+      title: "Drop cap harfi",
+      type: "string",
+      initialValue: "Y",
+      group: "story",
+    }),
 
     // STORY
     defineField({
@@ -44,6 +74,13 @@ export const aboutPage = defineType({
     }),
 
     // VALUES
+    defineField({
+      name: "valuesSectionLabel",
+      title: "Değerler bölüm etiketi",
+      type: "string",
+      initialValue: "/ Değerler",
+      group: "values",
+    }),
     defineField({
       name: "values",
       title: "Değer kartları",

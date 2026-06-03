@@ -16,7 +16,7 @@ export function FeaturedProducts({ products, data }: FeaturedProductsProps) {
         <Reveal className="lg:col-span-7">
           <div className="flex items-center gap-3">
             <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-bordeaux">
-              / Vitrin
+              {data.featuredSectionLabel || "/ Vitrin"}
             </span>
             <span className="h-px flex-1 bg-bordeaux/20" />
           </div>

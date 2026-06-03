@@ -33,11 +33,19 @@ export function computeSale(
   return { onSale: false, effectivePrice: price };
 }
 
-export function instagramDmUrl(productTitle?: string): string {
-  const base = "https://www.instagram.com/ykslbcl/";
+export function formatSaleBadge(template: string, percent: number): string {
+  return template.replace("{percent}", String(percent));
+}
+
+export function instagramDmUrl(
+  productTitle?: string,
+  instagramUrl?: string,
+  template?: string
+): string {
+  const base = instagramUrl || "https://www.instagram.com/ykslbcl/";
   if (!productTitle) return base;
-  const text = encodeURIComponent(
-    `Merhaba, "${productTitle}" hakkında bilgi almak istiyorum.`
-  );
-  return `${base}?text=${text}`;
+  const message = (
+    template || 'Merhaba, "{title}" hakkında bilgi almak istiyorum.'
+  ).replace("{title}", productTitle);
+  return `${base}?text=${encodeURIComponent(message)}`;
 }

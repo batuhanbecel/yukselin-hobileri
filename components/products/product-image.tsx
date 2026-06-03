@@ -9,6 +9,7 @@ type ProductImageProps = {
   className?: string;
   priority?: boolean;
   sizes?: string;
+  placeholderLabel?: string;
 };
 
 const PLACEHOLDER_GRADIENTS = [
@@ -31,6 +32,7 @@ export function ProductImage({
   className,
   priority = false,
   sizes = "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw",
+  placeholderLabel = "fotoğraf yakında",
 }: ProductImageProps) {
   const hasImage = image?.asset?._ref;
 
@@ -60,7 +62,7 @@ export function ProductImage({
             />
           </svg>
           <p className="font-hand mt-2 text-xl text-terracotta/80">
-            fotoğraf yakında
+            {placeholderLabel}
           </p>
         </div>
       </div>

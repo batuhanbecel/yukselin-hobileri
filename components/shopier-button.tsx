@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSiteSettings } from "@/lib/site-context";
 import { cn } from "@/lib/utils";
 
 type ShopierButtonProps = {
@@ -10,6 +13,9 @@ type ShopierButtonProps = {
 };
 
 export function ShopierButton({ url, className, size = "default" }: ShopierButtonProps) {
+  const settings = useSiteSettings();
+  const label = settings.shopierButtonLabel || "Shopier'dan satın al";
+
   return (
     <Button
       asChild
@@ -21,7 +27,7 @@ export function ShopierButton({ url, className, size = "default" }: ShopierButto
     >
       <Link href={url} target="_blank" rel="noopener noreferrer">
         <ShoppingBag className="size-4 shrink-0" />
-        Shopier&apos;dan satın al
+        {label}
       </Link>
     </Button>
   );

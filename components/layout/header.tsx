@@ -14,13 +14,17 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { NAV_LINKS, SITE_NAME, INSTAGRAM_URL } from "@/lib/constants";
+import { INSTAGRAM_URL, SITE_NAME } from "@/lib/constants";
+import { getNavLinks } from "@/lib/nav";
+import type { NavLink } from "@/lib/sanity/types";
 import { cn } from "@/lib/utils";
 
 type HeaderProps = {
   siteTitle?: string;
   tagline?: string;
   instagramUrl?: string;
+  navLinks?: NavLink[];
+  instagramHeaderLabel?: string;
 };
 
 function isActive(pathname: string, href: string) {
@@ -28,11 +32,19 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function Header({ siteTitle, tagline, instagramUrl }: HeaderProps) {
+export function Header({
+  siteTitle,
+  tagline,
+  instagramUrl,
+  navLinks,
+  instagramHeaderLabel,
+}: HeaderProps) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const title = siteTitle || SITE_NAME;
   const igUrl = instagramUrl || INSTAGRAM_URL;
+  const links = getNavLinks({ navLinks });
+  const igLabel = instagramHeaderLabel || "Instagram";
 
   const { scrollY } = useScroll();
   const blur = useTransform(scrollY, [0, 80], [0, 12]);
@@ -61,7 +73,6 @@ export function Header({ siteTitle, tagline, instagramUrl }: HeaderProps) {
         className="border-b"
       >
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-6 px-4 sm:px-8">
-          {/* Logo */}
           <Link href="/" className="group flex items-center gap-3">
             <motion.span
               whileHover={{ rotate: 18 }}
@@ -82,16 +93,13 @@ export function Header({ siteTitle, tagline, instagramUrl }: HeaderProps) {
                 {title}
               </span>
               {tagline && (
-                <span className="font-hand text-sm text-bordeaux">
-                  {tagline}
-                </span>
+                <span className="font-hand text-sm text-bordeaux">{tagline}</span>
               )}
             </span>
           </Link>
 
-          {/* Desktop nav */}
           <nav className="hidden items-center gap-1 md:flex">
-            {NAV_LINKS.map((link) => {
+            {links.map((link) => {
               const active = isActive(pathname, link.href);
               return (
                 <Link
@@ -120,12 +128,11 @@ export function Header({ siteTitle, tagline, instagramUrl }: HeaderProps) {
             >
               <Link href={igUrl} target="_blank" rel="noopener noreferrer">
                 <InstagramIcon />
-                Instagram
+                {igLabel}
               </Link>
             </Button>
           </nav>
 
-          {/* Mobile */}
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild className="md:hidden">
               <Button variant="ghost" size="icon" aria-label="Menüyü aç">
@@ -146,7 +153,7 @@ export function Header({ siteTitle, tagline, instagramUrl }: HeaderProps) {
                     )}
                   </SheetHeader>
                   <nav className="mt-10 flex flex-col gap-1 px-4">
-                    {NAV_LINKS.map((link, i) => {
+                    {links.map((link, i) => {
                       const active = isActive(pathname, link.href);
                       return (
                         <motion.div
@@ -181,7 +188,7 @@ export function Header({ siteTitle, tagline, instagramUrl }: HeaderProps) {
                         onClick={() => setOpen(false)}
                       >
                         <InstagramIcon />
-                        Instagram
+                        {igLabel}
                       </Link>
                     </Button>
                   </nav>

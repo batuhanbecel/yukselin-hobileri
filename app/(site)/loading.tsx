@@ -1,4 +1,8 @@
-export default function Loading() {
+import { getSiteSettings } from "@/lib/sanity/fetch";
+
+export default async function Loading() {
+  const settings = await getSiteSettings();
+
   return (
     <div className="mx-auto flex max-w-md flex-col items-center px-4 py-24 text-center">
       <svg
@@ -14,8 +18,14 @@ export default function Loading() {
           strokeWidth="2"
         />
       </svg>
-      <p className="font-hand mt-6 text-2xl text-terracotta">örülüyor...</p>
-      <p className="mt-1 text-sm text-cocoa-soft">Sayfa hazırlanıyor</p>
+      {settings.loadingHandwritten && (
+        <p className="font-hand mt-6 text-2xl text-terracotta">
+          {settings.loadingHandwritten}
+        </p>
+      )}
+      {settings.loadingText && (
+        <p className="mt-1 text-sm text-cocoa-soft">{settings.loadingText}</p>
+      )}
     </div>
   );
 }

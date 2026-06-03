@@ -5,12 +5,14 @@ type ProductGridProps = {
   products: Product[];
   emptyMessage?: string;
   emptyDescription?: string;
+  imagePlaceholderLabel?: string;
 };
 
 export function ProductGrid({
   products,
   emptyMessage = "yakında burada...",
   emptyDescription = "Yeni çantalar şu an tezgahta. Çok yakında paylaşacağım.",
+  imagePlaceholderLabel,
 }: ProductGridProps) {
   if (products.length === 0) {
     return (
@@ -29,6 +31,7 @@ export function ProductGrid({
           product={product}
           priority={index < 3}
           index={index}
+          imagePlaceholderLabel={imagePlaceholderLabel}
         />
       ))}
     </div>

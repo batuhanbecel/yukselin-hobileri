@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { getSiteSettings } from "@/lib/sanity/fetch";
 
-export default function NotFound() {
+export default async function NotFound() {
+  const settings = await getSiteSettings();
+
   return (
     <div className="mx-auto flex max-w-lg flex-col items-center px-4 py-24 text-center">
       <svg
@@ -17,18 +20,24 @@ export default function NotFound() {
           strokeWidth="1.5"
         />
       </svg>
-      <p className="font-hand mt-6 text-2xl text-terracotta">aman</p>
+      {settings.notFoundHandwritten && (
+        <p className="font-hand mt-6 text-2xl text-terracotta">
+          {settings.notFoundHandwritten}
+        </p>
+      )}
       <h1 className="mt-1 font-heading text-4xl text-cocoa">
-        Sayfa bulunamadı
+        {settings.notFoundTitle || "Sayfa bulunamadı"}
       </h1>
-      <p className="mt-3 text-cocoa-soft">
-        Aradığın sayfa burada değil. Belki ipucu kayboldu.
-      </p>
+      {settings.notFoundText && (
+        <p className="mt-3 text-cocoa-soft">{settings.notFoundText}</p>
+      )}
       <Button
         asChild
         className="mt-8 rounded-full bg-terracotta text-white hover:bg-terracotta/90"
       >
-        <Link href="/">Ana sayfaya dön</Link>
+        <Link href="/">
+          {settings.notFoundHomeLabel || "Ana sayfaya dön"}
+        </Link>
       </Button>
     </div>
   );

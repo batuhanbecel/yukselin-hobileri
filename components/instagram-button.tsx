@@ -1,7 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import { InstagramIcon } from "@/components/icons/instagram-icon";
 import { Button } from "@/components/ui/button";
 import { instagramDmUrl } from "@/lib/format";
+import { useSiteSettings } from "@/lib/site-context";
 import { cn } from "@/lib/utils";
 
 type InstagramButtonProps = {
@@ -17,10 +20,15 @@ export function InstagramButton({
   size = "default",
   variant = "gradient",
 }: InstagramButtonProps) {
-  const href = instagramDmUrl(productTitle);
+  const settings = useSiteSettings();
+  const href = instagramDmUrl(
+    productTitle,
+    settings.instagramUrl,
+    settings.instagramDmTemplate
+  );
   const label = productTitle
-    ? "Instagram'dan sipariş ver"
-    : "Instagram'dan yaz";
+    ? settings.instagramProductButtonLabel || "Instagram'dan sipariş ver"
+    : settings.instagramButtonLabel || "Instagram'dan yaz";
 
   return (
     <Button

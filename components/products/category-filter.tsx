@@ -1,17 +1,22 @@
-import Link from "next/link";
 import type { Category } from "@/lib/sanity/types";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 type CategoryFilterProps = {
   categories: Category[];
   activeSlug?: string;
+  allLabel?: string;
 };
 
-export function CategoryFilter({ categories, activeSlug }: CategoryFilterProps) {
+export function CategoryFilter({
+  categories,
+  activeSlug,
+  allLabel = "Hepsi",
+}: CategoryFilterProps) {
   if (categories.length === 0) return null;
 
   const items = [
-    { _id: "all", title: "Hepsi", slug: { current: "" } },
+    { _id: "all", title: allLabel, slug: { current: "" } },
     ...categories,
   ];
 
@@ -27,9 +32,7 @@ export function CategoryFilter({ categories, activeSlug }: CategoryFilterProps) 
             href={href}
             className={cn(
               "relative py-1 text-xs font-medium uppercase tracking-[0.22em] transition-colors",
-              isActive
-                ? "text-bordeaux"
-                : "text-ink-soft hover:text-ink"
+              isActive ? "text-bordeaux" : "text-ink-soft hover:text-ink"
             )}
           >
             {cat.title}
