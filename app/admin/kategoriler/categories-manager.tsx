@@ -1,10 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { motion } from "motion/react";
-import { Check, Loader2, Pencil, Plus, RefreshCw, Trash2, X } from "lucide-react";
+import { Fragment, useCallback, useEffect, useState } from "react";
+import { Loader2, Plus, RefreshCw, Trash2, Zap } from "lucide-react";
+import {
+  CategoryQuickEdit,
+  categoryToDraft,
+  type CategoryQuickDraft,
+} from "@/components/admin/category-quick-edit";
 import { Field, inputCls } from "@/components/admin/form-fields";
 import { Button } from "@/components/ui/button";
+import { parseApiResponse } from "@/lib/parse-api-response";
 import { slugify } from "@/lib/slugify";
 
 type CategoryRow = {
@@ -20,32 +25,33 @@ export function CategoriesManager() {
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
-  // Yeni kategori formu
   const [newTitle, setNewTitle] = useState("");
   const [newOrder, setNewOrder] = useState("");
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
 
-  // Düzenleme state
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editTitle, setEditTitle] = useState("");
-  const [editOrder, setEditOrder] = useState("");
+  const [draft, setDraft] = useState<CategoryQuickDraft | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     try {
       const res = await fetch("/api/admin/categories");
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Yüklenemedi.");
-      setItems(data.categories as CategoryRow[]);
+      const parsed = await parseApiResponse<{
+        categories?: CategoryRow[];
+        error?: string;
+      }>(res);
+      if (!parsed.ok) throw new Error(parsed.error);
+      setItems(parsed.data.categories ?? []);
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Bilinmeyen hata.");
     }
-  };
+  }, []);
 
   useEffect(() => {
     load();
-  }, []);
+  }, [load]);
 
   const handleCreate = async () => {
     if (!newTitle.trim()) return;
@@ -60,8 +66,8 @@ export function CategoriesManager() {
           order: newOrder ? Number(newOrder) : 0,
         }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Eklenemedi.");
+      const parsed = await parseApiResponse<{ error?: string }>(res);
+      if (!parsed.ok) throw new Error(parsed.error);
       setNewTitle("");
       setNewOrder("");
       await load();
@@ -72,36 +78,50 @@ export function CategoriesManager() {
     }
   };
 
-  const startEdit = (cat: CategoryRow) => {
+  const startQuickEdit = (cat: CategoryRow) => {
     setEditingId(cat._id);
-    setEditTitle(cat.title);
-    setEditOrder(cat.order?.toString() || "0");
+    setDraft(categoryToDraft(cat));
+    setSaveError(null);
   };
 
-  const cancelEdit = () => {
+  const cancelQuickEdit = () => {
     setEditingId(null);
-    setEditTitle("");
-    setEditOrder("");
+    setDraft(null);
+    setSaveError(null);
   };
 
-  const handleUpdate = async (id: string) => {
-    if (!editTitle.trim()) return;
-    setBusyId(id);
+  const handleQuickSave = async () => {
+    if (!editingId || !draft || !draft.title.trim()) return;
+    setBusyId(editingId);
+    setSaveError(null);
     try {
-      const res = await fetch(`/api/admin/categories/${id}`, {
+      const res = await fetch(`/api/admin/categories/${editingId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title: editTitle.trim(),
-          order: editOrder ? Number(editOrder) : 0,
+          title: draft.title.trim(),
+          order: draft.order ? Number(draft.order) : 0,
         }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Güncellenemedi.");
-      cancelEdit();
-      await load();
+      const parsed = await parseApiResponse<{ error?: string }>(res);
+      if (!parsed.ok) throw new Error(parsed.error);
+
+      const newSlug = slugify(draft.title.trim());
+      setItems((prev) =>
+        prev?.map((c) =>
+          c._id === editingId
+            ? {
+                ...c,
+                title: draft.title.trim(),
+                slug: newSlug,
+                order: Number(draft.order) || 0,
+              }
+            : c
+        ) ?? null
+      );
+      cancelQuickEdit();
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Bilinmeyen hata.");
+      setSaveError(err instanceof Error ? err.message : "Kayıt başarısız.");
     } finally {
       setBusyId(null);
     }
@@ -117,16 +137,17 @@ export function CategoriesManager() {
     if (!confirm(`"${cat.title}" kategorisini silmek istediğinden emin misin?`)) {
       return;
     }
+    if (editingId === cat._id) cancelQuickEdit();
     setBusyId(cat._id);
     try {
       const res = await fetch(`/api/admin/categories/${cat._id}`, {
         method: "DELETE",
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Silinemedi.");
-      await load();
+      const parsed = await parseApiResponse<{ error?: string }>(res);
+      if (!parsed.ok) throw new Error(parsed.error);
+      setItems((prev) => prev?.filter((c) => c._id !== cat._id) ?? null);
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Bilinmeyen hata.");
+      alert(err instanceof Error ? err.message : "Silme başarısız.");
     } finally {
       setBusyId(null);
     }
@@ -140,13 +161,11 @@ export function CategoriesManager() {
           Kategoriler
         </h1>
         <p className="mt-3 max-w-xl text-ink-soft">
-          Çanta, kazak, hırka gibi koleksiyon türlerini yönet. Ürünler bunlara
-          referansla bağlanır.
+          Satıra tıklayarak ad ve sırayı düzenle — sayfa değiştirmeden kaydet.
         </p>
       </div>
 
-      {/* Yeni ekle */}
-      <section className="mb-12 rounded-2xl border border-bordeaux/15 bg-paper p-6">
+      <section className="mb-10 rounded-2xl border border-bordeaux/15 bg-paper p-6">
         <div className="flex items-center gap-3">
           <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-bordeaux">
             / Yeni
@@ -204,8 +223,7 @@ export function CategoriesManager() {
         )}
       </section>
 
-      {/* Mevcut kategoriler */}
-      <div className="flex items-center justify-between gap-3 mb-4">
+      <div className="mb-4 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-bordeaux">
             / Mevcut
@@ -231,123 +249,130 @@ export function CategoriesManager() {
           <Loader2 className="size-6 animate-spin text-bordeaux" />
         </div>
       ) : items && items.length === 0 ? (
-        <p className="text-center text-ink-soft py-12">Henüz kategori yok.</p>
+        <p className="py-12 text-center text-ink-soft">Henüz kategori yok.</p>
       ) : items ? (
-        <motion.ul
-          className="space-y-2"
-          initial="hidden"
-          animate="visible"
-          variants={{
-            hidden: {},
-            visible: { transition: { staggerChildren: 0.04 } },
-          }}
-        >
-          {items.map((cat) => {
-            const isEditing = editingId === cat._id;
-            const isBusy = busyId === cat._id;
-            return (
-              <motion.li
-                key={cat._id}
-                variants={{
-                  hidden: { opacity: 0, y: 8 },
-                  visible: { opacity: 1, y: 0 },
-                }}
-                className="rounded-xl border border-bordeaux/15 bg-paper p-4"
-              >
-                {isEditing ? (
-                  <div className="grid gap-3 sm:grid-cols-[1fr_120px_auto]">
-                    <input
-                      value={editTitle}
-                      onChange={(e) => setEditTitle(e.target.value)}
-                      className={inputCls}
-                      autoFocus
-                    />
-                    <input
-                      type="number"
-                      inputMode="numeric"
-                      value={editOrder}
-                      onChange={(e) => setEditOrder(e.target.value)}
-                      className={inputCls}
-                    />
-                    <div className="flex gap-1">
-                      <button
-                        onClick={() => handleUpdate(cat._id)}
-                        disabled={isBusy || !editTitle.trim()}
-                        className="rounded-full bg-ink p-2 text-paper hover:bg-bordeaux disabled:opacity-50"
-                        title="Kaydet"
-                      >
-                        {isBusy ? (
-                          <Loader2 className="size-4 animate-spin" />
-                        ) : (
-                          <Check className="size-4" />
-                        )}
-                      </button>
-                      <button
-                        onClick={cancelEdit}
-                        disabled={isBusy}
-                        className="rounded-full border border-bordeaux/30 p-2 text-ink hover:bg-bordeaux/10"
-                        title="İptal"
-                      >
-                        <X className="size-4" />
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-baseline gap-3">
-                        <p className="font-heading text-xl text-ink">
+        <div className="overflow-hidden rounded-2xl border border-bordeaux/15 bg-paper">
+          <table className="w-full text-sm">
+            <thead className="border-b border-bordeaux/10 bg-ivory-deep/30 text-left text-[10px] font-medium uppercase tracking-[0.22em] text-ink-soft">
+              <tr>
+                <th className="p-3">Kategori</th>
+                <th className="p-3 text-right">Sıra</th>
+                <th className="p-3 text-right">Ürün</th>
+                <th className="p-3 text-right">İşlem</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-bordeaux/5">
+              {items.map((cat) => {
+                const isEditing = editingId === cat._id;
+                const isBusy = busyId === cat._id;
+
+                return (
+                  <Fragment key={cat._id}>
+                    <tr
+                      className={`cursor-pointer transition-colors ${
+                        isEditing
+                          ? "bg-bordeaux/5"
+                          : "hover:bg-ivory-deep/20"
+                      }`}
+                      onClick={() => {
+                        if (!isEditing) startQuickEdit(cat);
+                      }}
+                    >
+                      <td className="p-3">
+                        <p className="font-heading text-lg text-ink">
                           {cat.title}
                         </p>
-                        <span className="text-[10px] font-medium uppercase tracking-[0.22em] text-ink-soft">
-                          / {cat.slug}
-                        </span>
-                      </div>
-                      <p className="mt-1 text-xs text-ink-soft">
-                        Sıra: {cat.order ?? 0} ·{" "}
+                        {cat.slug && (
+                          <p className="text-xs text-ink-soft/70">
+                            /urunler/kategori/{cat.slug}
+                          </p>
+                        )}
+                      </td>
+                      <td className="p-3 text-right text-ink-soft">
+                        {cat.order ?? 0}
+                      </td>
+                      <td className="p-3 text-right">
                         <span
                           className={
                             cat.productCount > 0
-                              ? "text-bordeaux"
+                              ? "font-medium text-bordeaux"
                               : "text-ink-soft/70"
                           }
                         >
-                          {cat.productCount} ürün
+                          {cat.productCount}
                         </span>
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <button
-                        onClick={() => startEdit(cat)}
-                        disabled={isBusy}
-                        className="rounded p-1.5 text-ink-soft hover:bg-bordeaux/10 hover:text-bordeaux"
-                        title="Düzenle"
-                      >
-                        <Pencil className="size-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(cat)}
-                        disabled={isBusy || cat.productCount > 0}
-                        className="rounded p-1.5 text-ink-soft hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-ink-soft/50"
-                        title={
-                          cat.productCount > 0
-                            ? "Önce kullanan ürünleri kaldır"
-                            : "Sil"
-                        }
-                      >
-                        {isBusy ? (
-                          <Loader2 className="size-4 animate-spin" />
-                        ) : (
-                          <Trash2 className="size-4" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </motion.li>
-            );
-          })}
-        </motion.ul>
+                      </td>
+                      <td className="p-3">
+                        <div
+                          className="flex items-center justify-end gap-1"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <button
+                            type="button"
+                            onClick={() =>
+                              isEditing
+                                ? cancelQuickEdit()
+                                : startQuickEdit(cat)
+                            }
+                            className={`rounded p-1.5 ${
+                              isEditing
+                                ? "bg-bordeaux/15 text-bordeaux"
+                                : "text-ink-soft hover:bg-bordeaux/10 hover:text-bordeaux"
+                            }`}
+                            title="Hızlı düzenle"
+                          >
+                            <Zap className="size-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(cat)}
+                            disabled={
+                              isBusy || cat.productCount > 0
+                            }
+                            className="rounded p-1.5 text-ink-soft hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-40"
+                            title={
+                              cat.productCount > 0
+                                ? "Önce kullanan ürünleri kaldır"
+                                : "Sil"
+                            }
+                          >
+                            {isBusy ? (
+                              <Loader2 className="size-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="size-4" />
+                            )}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    {isEditing && draft && (
+                      <tr>
+                        <td colSpan={4} className="p-0">
+                          {saveError && (
+                            <div className="mx-4 mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-800">
+                              {saveError}
+                            </div>
+                          )}
+                          <CategoryQuickEdit
+                            slug={cat.slug}
+                            productCount={cat.productCount}
+                            draft={draft}
+                            saving={isBusy}
+                            onChange={(patch) =>
+                              setDraft((d) => (d ? { ...d, ...patch } : d))
+                            }
+                            onSave={handleQuickSave}
+                            onCancel={cancelQuickEdit}
+                          />
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       ) : null}
     </div>
   );

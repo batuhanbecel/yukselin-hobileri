@@ -18,6 +18,7 @@ const LIST_QUERY = `*[_type == "product"] | order(order asc, _createdAt desc) {
   featured,
   order,
   "categoryTitle": category->title,
+  "categoryId": category._ref,
   "thumb": images[0].asset->url,
   _updatedAt
 }`;
