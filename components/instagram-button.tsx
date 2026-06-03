@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { InstagramIcon } from "@/components/icons/instagram-icon";
-import { ctaButtonBase, ctaButtonSizes } from "@/components/cta-button-styles";
+import { ctaButtonBase, ctaButtonOutline, ctaButtonSizes } from "@/components/cta-button-styles";
 import { Button } from "@/components/ui/button";
 import { instagramDmUrl } from "@/lib/format";
 import { useSiteSettings } from "@/lib/site-context";
@@ -39,9 +39,8 @@ export function InstagramButton({
         ctaButtonBase,
         ctaButtonSizes[size],
         variant === "gradient" &&
-          "bg-gradient-to-r from-ink via-ink to-bordeaux/90 text-paper ring-1 ring-ink/10 hover:from-bordeaux hover:via-bordeaux hover:to-bordeaux/90 hover:ring-bordeaux/25",
-        variant === "outline" &&
-          "bg-paper/80 text-ink shadow-none ring-1 ring-bordeaux/25 hover:-translate-y-0 hover:bg-bordeaux-soft/25 hover:shadow-[0_4px_14px_rgba(168,88,77,0.12)]",
+          "bg-gradient-to-r from-bordeaux via-clay to-bordeaux-soft text-paper ring-1 ring-bordeaux/20 hover:from-clay hover:via-bordeaux hover:to-bordeaux hover:ring-bordeaux/35",
+        variant === "outline" && ctaButtonOutline,
         className
       )}
       variant={variant === "outline" ? "outline" : "default"}

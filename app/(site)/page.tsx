@@ -1,10 +1,9 @@
-import Link from "next/link";
 import { FeaturedProducts } from "@/components/home/featured-products";
 import { Hero } from "@/components/home/hero";
 import { HighlightIcon } from "@/components/home/highlight-icon";
 import { InstagramButton } from "@/components/instagram-button";
+import { SiteLinkButton } from "@/components/site-link-button";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
-import { Button } from "@/components/ui/button";
 import { getFeaturedProducts, getHomePage } from "@/lib/sanity/fetch";
 
 export default async function HomePage() {
@@ -126,17 +125,11 @@ export default async function HomePage() {
           </Stagger>
 
           <Reveal delay={0.2} className="mt-14 text-center">
-            <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <InstagramButton size="lg" />
-              <Button
-                asChild
-                variant="outline"
-                className="rounded-full border-bordeaux/30 bg-paper/80 text-ink hover:bg-bordeaux hover:text-paper"
-              >
-                <Link href="/urunler">
-                  {home.stepsCtaLabel || "Tüm Çantaları İncele"}
-                </Link>
-              </Button>
+              <SiteLinkButton href="/urunler" size="lg">
+                {home.stepsCtaLabel || "Tüm Çantaları İncele"}
+              </SiteLinkButton>
             </div>
           </Reveal>
         </section>
