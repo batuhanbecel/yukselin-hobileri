@@ -2,7 +2,7 @@
  * Admin: ham çanta fotoğrafından AI görsel üretir.
  *
  * Akış:
- *   1) Nano Banana (Gemini 2.5 Flash Image) ile içerik üretimi
+ *   1) Fal edit modeli ile içerik üretimi (varsayılan: openai/gpt-image-2/edit)
  *   2) Clarity Upscaler ile 2x büyütme (kaliteyi artırır)
  *
  * Mode:
@@ -18,6 +18,11 @@
  */
 
 import { NextResponse } from "next/server";
+import {
+  buildEditInput,
+  FAL_EDIT_MODEL,
+  FAL_UPSCALE_MODEL,
+} from "@/lib/fal-config";
 import { fal, isFalConfigured } from "@/lib/fal";
 
 export const maxDuration = 60;
@@ -62,7 +67,7 @@ type FalUpscaleResult = { data?: { image?: FalImage } };
 
 async function upscaleImage(imageUrl: string): Promise<string | null> {
   try {
-    const result = (await fal.subscribe("fal-ai/clarity-upscaler", {
+    const result = (await fal.subscribe(FAL_UPSCALE_MODEL, {
       input: {
         image_url: imageUrl,
         upscale_factor: 2,
@@ -156,14 +161,9 @@ export async function POST(req: Request) {
       : defaultPrompt;
 
   try {
-    // 1) Nano Banana ile içerik üret
-    const editResult = (await fal.subscribe("fal-ai/nano-banana/edit", {
-      input: {
-        prompt,
-        image_urls: [inputUrl],
-        num_images: 1,
-        output_format: "jpeg",
-      },
+    // 1) Edit modeli ile içerik üret (varsayılan: GPT Image 2)
+    const editResult = (await fal.subscribe(FAL_EDIT_MODEL, {
+      input: buildEditInput(FAL_EDIT_MODEL, prompt, inputUrl),
       logs: false,
     })) as FalEditResult;
 
@@ -188,6 +188,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       mode,
+      model: FAL_EDIT_MODEL,
       inputUrl,
       generatedUrl: finalUrl,
       rawUrl: editedUrl,
