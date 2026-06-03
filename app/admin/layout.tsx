@@ -29,6 +29,12 @@ export default function AdminLayout({
               Yeni Ürün
             </Link>
             <Link
+              href="/admin/urunler"
+              className="link-underline text-ink-soft hover:text-bordeaux"
+            >
+              Ürünler
+            </Link>
+            <Link
               href="/studio"
               className="link-underline text-ink-soft hover:text-bordeaux"
             >
