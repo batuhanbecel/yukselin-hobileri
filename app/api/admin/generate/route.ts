@@ -28,36 +28,34 @@ import { fal, isFalConfigured } from "@/lib/fal";
 export const maxDuration = 60;
 export const runtime = "nodejs";
 
-const DEFAULT_PRODUCT_NAME = "el emeği örgü çanta";
-const DEFAULT_STILLLIFE_STYLE = "doğal · Akdeniz · sıcak tonlar";
-const DEFAULT_LIFESTYLE_STYLE = "bohem · yazlık · doğal · Akdeniz";
+const DEFAULT_PRODUCT_NAME = "handmade crochet bag";
+const DEFAULT_STILLLIFE_STYLE = "natural · Mediterranean · warm tones";
+const DEFAULT_LIFESTYLE_STYLE = "bohemian · summery · natural · Mediterranean";
 
 function buildProductPrompt(productName: string, style: string) {
   return (
-    `Yüklediğim görseldeki ${productName} için profesyonel bir still life ` +
-    `ürün fotoğrafı oluştur. Ürünün kendisine kesinlikle dokunma; form, ` +
-    `renk, doku, desen, materyal, ölçü hissi ve tüm detaylar birebir korunsun. ` +
-    `Sadece arka plan, ışık, zemin, kompozisyon ve styling değişsin. ` +
-    `${style} estetikte bir sahne kur. Ürün ana odakta olsun. Gerekirse az ` +
-    `sayıda dekor kullan ama ürünü bastırma. Sonuç gerçekçi, premium ve ` +
-    `e-ticaret kalitesinde olsun. En-boy oranı 3:4.`
+    `Create a professional still-life product photograph of the ${productName} ` +
+    `shown in the uploaded image. Do not alter the product itself — preserve its ` +
+    `shape, color, texture, pattern, material, scale, and every detail exactly. ` +
+    `Only change the background, lighting, surface, composition, and styling. ` +
+    `Set the scene in a ${style} aesthetic. Keep the product as the main focus. ` +
+    `Use minimal props if needed, but do not overpower the product. The result ` +
+    `should look realistic, premium, and e-commerce ready. Aspect ratio 3:4.`
   );
 }
 
 function buildLifestylePrompt(productName: string, style: string) {
   return (
-    `Yüklediğim görseldeki ${productName} için profesyonel bir lifestyle ` +
-    `fotoğraf oluştur. Ürünün kendisine kesinlikle dokunma; form, renk, ` +
-    `doku, desen, materyal, ölçü hissi ve tüm detaylar birebir korunsun. ` +
-    `Ürün bir model üzerinde doğal şekilde sergilensin. Model ürünü omzunda, ` +
-    `elinde veya üzerinde taşısın ya da kullansın. ` +
-    `ÖNEMLİ: Modelin yüzü kadrajda olmasın. Çerçeve boyun altından başlasın ` +
-    `veya yalnızca el, omuz, bel ya da silüet görünsün; yüz, gözler ve baş ` +
-    `kesinlikle kadraj dışında kalsın. ` +
-    `${style} bir atmosfer kur. Arka plan, ışık, styling ve model ` +
-    `kombinasyonu ürüne uygun olsun. Ürün net şekilde görünsün ve ana ` +
-    `odak olarak kalsın. Sonuç gerçekçi, estetik ve marka çekimi ` +
-    `kalitesinde olsun. En-boy oranı 3:4.`
+    `Create a professional lifestyle photograph featuring the ${productName} ` +
+    `shown in the uploaded image. Do not alter the product itself — preserve its ` +
+    `shape, color, texture, pattern, material, scale, and every detail exactly. ` +
+    `Show the product naturally on a model — carried on the shoulder, held in ` +
+    `hand, or worn. IMPORTANT: Do not show the model's face. Frame from below ` +
+    `the neck, or show only hands, shoulders, waist, or silhouette; face, eyes, ` +
+    `and head must stay out of frame. Build a ${style} atmosphere. Background, ` +
+    `lighting, styling, and outfit should complement the product. The product ` +
+    `must remain clearly visible and the main focus. The result should look ` +
+    `realistic, aesthetic, and brand-campaign quality. Aspect ratio 3:4.`
   );
 }
 

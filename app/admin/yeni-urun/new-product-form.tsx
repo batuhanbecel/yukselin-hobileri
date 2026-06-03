@@ -362,7 +362,7 @@ export function NewProductForm({ categories }: Props) {
               <textarea
                 value={customPrompt}
                 onChange={(e) => setCustomPrompt(e.target.value)}
-                placeholder="Boş bırakırsan varsayılan kullanılır. Bu prompt iki üretim için de geçerli."
+                placeholder="Boş bırakırsan varsayılan İngilizce prompt kullanılır. Özel yazacaksan İngilizce yaz — iki üretim için de geçerli."
                 className="mt-3 w-full rounded-lg border border-bordeaux/20 bg-ivory p-3 text-sm focus:border-bordeaux focus:outline-none"
                 rows={4}
               />
